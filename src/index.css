@@ -1,13 +1,38 @@
 body {
   margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+  font-family: 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
     'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
     sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  background-color: #f0e8d6;
+  color: #1a1a1a;
 }
 
 code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
+}
+
+/* Import Google font */
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+
+/* Custom classes for buttons and elements styled like the bakery website */
+.swirlzy-primary-btn {
+  background-color: #35774b !important;
+  color: white !important;
+  border-radius: 30px !important;
+  font-weight: 600 !important;
+  text-transform: none !important;
+  box-shadow: 0 4px 10px rgba(53, 119, 75, 0.2) !important;
+}
+
+.swirlzy-primary-btn:hover {
+  background-color: #2a5f3b !important;
+}
+
+.swirlzy-rounded-card {
+  border-radius: 24px !important;
+  overflow: hidden !important;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08) !important;
 }
