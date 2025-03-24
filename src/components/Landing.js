@@ -68,10 +68,9 @@ function Landing() {
   const [open, setOpen] = useState(false);
   const [userName, setUserName] = useState('');
   const [loading, setLoading] = useState(true);
-  const [currentTab, setCurrentTab] = useState(0);
   const [userMenuAnchor, setUserMenuAnchor] = useState(null);
   const [notificationsMenuAnchor, setNotificationsMenuAnchor] = useState(null);
-  const [selectedCategory, setSelectedCategory] = useState('All Posts');
+  const [selectedSubsection, setSelectedSubsection] = useState('assignment1');
 
   const drawerWidth = 240;
 
@@ -134,10 +133,6 @@ function Landing() {
     handleCloseDialog();
   };
 
-  const handleTabChange = (event, newValue) => {
-    setCurrentTab(newValue);
-  };
-
   const handleUserMenuOpen = (event) => {
     setUserMenuAnchor(event.currentTarget);
   };
@@ -154,8 +149,8 @@ function Landing() {
     setNotificationsMenuAnchor(null);
   };
 
-  const handleCategorySelect = (category) => {
-    setSelectedCategory(category);
+  const handleSubsectionSelect = (subsectionId) => {
+    setSelectedSubsection(subsectionId);
   };
 
   // Logo component in the style of the image
@@ -195,119 +190,177 @@ function Landing() {
       id: 1, 
       name: 'Web Development Bootcamp', 
       code: 'CSE-301',
-      icon: <CodeIcon fontSize="small" />
-    },
-    { 
-      id: 2, 
-      name: 'Data Structures & Algorithms', 
-      code: 'CSE-201',
-      icon: <FolderIcon fontSize="small" />
-    },
-    { 
-      id: 3, 
-      name: 'Machine Learning Fundamentals', 
-      code: 'CSE-401',
-      icon: <SchoolIcon fontSize="small" />
+      icon: <CodeIcon fontSize="small" />,
+      expanded: true, // Start with the subsections expanded
+      subsections: [
+        { id: 'assignment1', name: 'Assignment 1', icon: <AssignmentIcon fontSize="small" /> },
+        { id: 'lab1', name: 'Lab 1', icon: <MenuBookIcon fontSize="small" /> },
+        { id: 'lab2', name: 'Lab 2', icon: <MenuBookIcon fontSize="small" /> },
+        { id: 'lab3', name: 'Lab 3', icon: <MenuBookIcon fontSize="small" /> },
+        { id: 'general', name: 'General', icon: <AdjustIcon fontSize="small" /> },
+      ]
     }
   ];
 
-  // Discussion categories
-  const categories = [
-    { id: 'all', name: 'All Posts', icon: <ForumIcon fontSize="small" color="action" /> },
-    { id: 'questions', name: 'Questions', icon: <QuestionAnswerIcon fontSize="small" color="primary" /> },
-    { id: 'announcements', name: 'Announcements', icon: <FlagIcon fontSize="small" sx={{ color: '#f0b952' }} /> },
-    { id: 'resources', name: 'Resources', icon: <BookmarkIcon fontSize="small" color="success" /> },
-    { id: 'general', name: 'General', icon: <AdjustIcon fontSize="small" color="action" /> }
-  ];
+  // Thread data by subsection (mock)
+  const threadsBySubsection = {
+    assignment1: [
+      {
+        id: 1,
+        title: 'How do I deploy React app for Assignment 1?',
+        author: 'Michael K.',
+        authorAvatar: 'M',
+        date: '2 hours ago',
+        replies: 8,
+        views: 42,
+        category: 'Questions',
+        solved: true,
+        likes: 12,
+        preview: 'I\'m trying to deploy my React app to Vercel but getting build errors. The assignment requires deployment, can anyone help?'
+      },
+      {
+        id: 3,
+        title: 'Useful resources for CSS Grid in Assignment 1',
+        author: 'Sarah J.',
+        authorAvatar: 'S',
+        date: '3 days ago',
+        replies: 6,
+        views: 89,
+        category: 'Resources',
+        solved: false,
+        likes: 24,
+        preview: 'I found this amazing interactive CSS Grid tutorial that really helped me complete part 3 of Assignment 1...'
+      },
+      {
+        id: 6,
+        title: 'Important: Assignment 1 grading criteria',
+        author: 'Prof. Williams',
+        authorAvatar: 'PW',
+        date: '1 week ago',
+        replies: 5,
+        views: 210,
+        category: 'Announcements',
+        solved: false,
+        likes: 45,
+        preview: 'The grading criteria for Assignment 1 will focus on code quality, responsive design, and proper implementation of React components...'
+      }
+    ],
+    lab1: [
+      {
+        id: 7,
+        title: 'Lab 1: Setting up your development environment',
+        author: 'Prof. Williams',
+        authorAvatar: 'PW',
+        date: '2 weeks ago',
+        replies: 12,
+        views: 189,
+        category: 'Announcements',
+        solved: false,
+        likes: 28,
+        preview: 'This lab will walk you through setting up Node.js, React, and other tools needed for the course...'
+      },
+      {
+        id: 8,
+        title: 'Getting VSCode extensions for Lab 1',
+        author: 'Alex T.',
+        authorAvatar: 'A',
+        date: '10 days ago',
+        replies: 7,
+        views: 65,
+        category: 'Questions',
+        solved: true,
+        likes: 15,
+        preview: 'Which VSCode extensions are recommended for React development? The lab instructions mention a few but I\'m wondering if there are others.'
+      }
+    ],
+    lab2: [
+      {
+        id: 2,
+        title: 'Lab 2 deadline extended to next Friday',
+        author: 'Prof. Williams',
+        authorAvatar: 'PW',
+        date: 'Yesterday',
+        replies: 14,
+        views: 156,
+        category: 'Announcements',
+        solved: false,
+        likes: 32,
+        preview: 'Due to multiple requests and the upcoming holiday, we\'ve decided to extend the deadline for Lab 2 submission...'
+      },
+      {
+        id: 5,
+        title: 'Trouble understanding React Hooks in Lab 2',
+        author: 'Jamie L.',
+        authorAvatar: 'J',
+        date: '5 days ago',
+        replies: 12,
+        views: 72,
+        category: 'Questions',
+        solved: true,
+        likes: 8,
+        preview: 'I\'m struggling with implementing useEffect with dependencies for the lab exercise. Could someone explain the concept?'
+      }
+    ],
+    lab3: [
+      {
+        id: 4,
+        title: 'Study group for Lab 3 - anyone interested?',
+        author: 'Alex T.',
+        authorAvatar: 'A',
+        date: '4 days ago',
+        replies: 21,
+        views: 118,
+        category: 'General',
+        solved: false,
+        likes: 18,
+        preview: 'I\'m organizing a study group for Lab 3. We\'ll be meeting in the library on Tuesday at 5pm...'
+      },
+      {
+        id: 9,
+        title: 'Lab 3 exercise on React Router is confusing',
+        author: 'Dana P.',
+        authorAvatar: 'D',
+        date: '3 days ago',
+        replies: 9,
+        views: 87,
+        category: 'Questions',
+        solved: false,
+        likes: 5,
+        preview: 'I\'m having trouble with nested routes in the Lab 3 exercises. Has anyone figured out how to properly implement them?'
+      }
+    ],
+    general: [
+      {
+        id: 10,
+        title: 'Course Syllabus Updates',
+        author: 'Prof. Williams',
+        authorAvatar: 'PW',
+        date: '1 week ago',
+        replies: 3,
+        views: 210,
+        category: 'Announcements',
+        solved: false,
+        likes: 25,
+        preview: 'I\'ve made some updates to the course syllabus including adjustments to the grading scale. Please review...'
+      },
+      {
+        id: 11,
+        title: 'Recommended JavaScript books?',
+        author: 'Taylor R.',
+        authorAvatar: 'T',
+        date: '5 days ago',
+        replies: 8,
+        views: 62,
+        category: 'Questions',
+        solved: true,
+        likes: 12,
+        preview: 'I\'m looking for good JavaScript books to supplement the course material. Any recommendations?'
+      }
+    ]
+  };
 
-  // Thread data (mock)
-  const threads = [
-    {
-      id: 1,
-      title: 'How do I implement a linked list in JavaScript?',
-      author: 'Michael K.',
-      authorAvatar: 'M',
-      date: '2 hours ago',
-      replies: 8,
-      views: 42,
-      category: 'Questions',
-      solved: true,
-      likes: 12,
-      preview: 'I\'m trying to create a custom linked list implementation but am having trouble with the node connection logic...'
-    },
-    {
-      id: 2,
-      title: 'Assignment 3 due date extended to next Friday',
-      author: 'Prof. Williams',
-      authorAvatar: 'PW',
-      date: 'Yesterday',
-      replies: 14,
-      views: 156,
-      category: 'Announcements',
-      solved: false,
-      likes: 32,
-      preview: 'Due to multiple requests and the upcoming holiday, we\'ve decided to extend the deadline for Assignment 3...'
-    },
-    {
-      id: 3,
-      title: 'Great resource for learning graph algorithms',
-      author: 'Sarah J.',
-      authorAvatar: 'S',
-      date: '3 days ago',
-      replies: 6,
-      views: 89,
-      category: 'Resources',
-      solved: false,
-      likes: 24,
-      preview: 'I found this amazing interactive visualization tool that helps understand how graph traversal algorithms work...'
-    },
-    {
-      id: 4,
-      title: 'Study group for final exam - anyone interested?',
-      author: 'Alex T.',
-      authorAvatar: 'A',
-      date: '4 days ago',
-      replies: 21,
-      views: 118,
-      category: 'General',
-      solved: false,
-      likes: 18,
-      preview: 'I\'m organizing a study group for the final exam. We\'ll be meeting in the library on Tuesdays and Thursdays...'
-    },
-    {
-      id: 5,
-      title: 'Trouble understanding recursion concepts',
-      author: 'Jamie L.',
-      authorAvatar: 'J',
-      date: '5 days ago',
-      replies: 12,
-      views: 72,
-      category: 'Questions',
-      solved: true,
-      likes: 8,
-      preview: 'I keep getting stuck when trying to solve recursive problems. Could someone explain the base case concept...'
-    },
-    {
-      id: 6,
-      title: 'Important: Midterm exam information',
-      author: 'Prof. Williams',
-      authorAvatar: 'PW',
-      date: '1 week ago',
-      replies: 5,
-      views: 210,
-      category: 'Announcements',
-      solved: false,
-      likes: 45,
-      preview: 'The midterm exam will cover chapters 1-5 and will include both multiple-choice and coding questions...'
-    }
-  ];
-
-  // Notifications (mock)
-  const notifications = [
-    { id: 1, text: 'Prof. Williams replied to your question', time: '30 min ago' },
-    { id: 2, text: 'New announcement in CSE-301', time: '2 hours ago' },
-    { id: 3, text: 'Your post was marked as solution', time: 'Yesterday' }
-  ];
+  // Get threads based on selected subsection
+  const currentThreads = threadsBySubsection[selectedSubsection] || [];
 
   if (loading) {
     return (
@@ -317,11 +370,6 @@ function Landing() {
       </Box>
     );
   }
-
-  // Filter threads based on selected category
-  const filteredThreads = selectedCategory === 'All Posts' 
-    ? threads 
-    : threads.filter(thread => thread.category === selectedCategory);
 
   return (
     <Box sx={{ display: 'flex', minHeight: '100vh' }}>
@@ -353,47 +401,85 @@ function Landing() {
             
             <Box sx={{ px: 2, mt: 2, mb: 1 }}>
               <Typography variant="body2" color="text.secondary" fontWeight="medium">
-                MY COURSES
+                MY COURSE
               </Typography>
             </Box>
             
             {courses.map((course) => (
-              <ListItem 
-                key={course.id} 
-                button 
-                selected={course.id === 1}
-                sx={{ 
-                  borderRadius: 2, 
-                  mb: 0.5,
-                  '&.Mui-selected': {
-                    bgcolor: 'rgba(123, 31, 162, 0.08)',
-                    '&:hover': {
-                      bgcolor: 'rgba(123, 31, 162, 0.12)'
-                    }
-                  }
-                }}
-              >
-                <ListItemIcon sx={{ minWidth: 36 }}>
-                  {course.icon}
-                </ListItemIcon>
-                <ListItemText 
-                  primary={course.code} 
-                  secondary={course.name}
-                  primaryTypographyProps={{ 
-                    fontWeight: 'medium',
-                    variant: 'body2',
-                    noWrap: true
-                  }}
-                  secondaryTypographyProps={{
-                    variant: 'body2',
-                    noWrap: true,
-                    sx: { 
-                      mt: 0,
-                      opacity: 0.8
+              <React.Fragment key={course.id}>
+                <ListItem 
+                  button 
+                  selected={true}
+                  sx={{ 
+                    borderRadius: 2, 
+                    mb: 0.5,
+                    '&.Mui-selected': {
+                      bgcolor: 'rgba(123, 31, 162, 0.08)',
+                      '&:hover': {
+                        bgcolor: 'rgba(123, 31, 162, 0.12)'
+                      }
                     }
                   }}
-                />
-              </ListItem>
+                >
+                  <ListItemIcon sx={{ minWidth: 36 }}>
+                    {course.icon}
+                  </ListItemIcon>
+                  <ListItemText 
+                    primary={course.code} 
+                    secondary={course.name}
+                    primaryTypographyProps={{ 
+                      fontWeight: 'medium',
+                      variant: 'body2',
+                      noWrap: true
+                    }}
+                    secondaryTypographyProps={{
+                      variant: 'body2',
+                      noWrap: true,
+                      sx: { 
+                        mt: 0,
+                        opacity: 0.8
+                      }
+                    }}
+                  />
+                </ListItem>
+                
+                {/* Course subsections */}
+                <List component="div" disablePadding dense>
+                  {course.subsections.map((subsection) => (
+                    <ListItem 
+                      key={subsection.id} 
+                      button 
+                      selected={selectedSubsection === subsection.id}
+                      onClick={() => handleSubsectionSelect(subsection.id)}
+                      sx={{ 
+                        pl: 4, 
+                        borderRadius: 2,
+                        mb: 0.5,
+                        '&.Mui-selected': {
+                          bgcolor: 'rgba(123, 31, 162, 0.08)',
+                          '&:hover': {
+                            bgcolor: 'rgba(123, 31, 162, 0.12)'
+                          }
+                        },
+                        '&:hover': {
+                          bgcolor: 'rgba(123, 31, 162, 0.04)'
+                        }
+                      }}
+                    >
+                      <ListItemIcon sx={{ minWidth: 36 }}>
+                        {subsection.icon}
+                      </ListItemIcon>
+                      <ListItemText 
+                        primary={subsection.name} 
+                        primaryTypographyProps={{ 
+                          variant: 'body2',
+                          fontWeight: selectedSubsection === subsection.id ? 'medium' : 'regular',
+                        }}
+                      />
+                    </ListItem>
+                  ))}
+                </List>
+              </React.Fragment>
             ))}
             
             <Divider sx={{ my: 2 }} />
@@ -484,139 +570,35 @@ function Landing() {
         </AppBar>
 
         {/* Main Content Area */}
-        <Box sx={{ display: 'flex', flexGrow: 1, overflow: 'hidden' }}>
-          {/* Category Sidebar */}
-          <Box
-            sx={{
-              width: 200,
-              borderRight: '1px solid rgba(0, 0, 0, 0.08)',
-              bgcolor: 'white',
-              pt: 2,
-              pl: 2
-            }}
-          >
-            <Typography variant="h6" fontWeight="medium" sx={{ mb: 2 }}>
-              Forum
+        <Box sx={{ flexGrow: 1, overflow: 'auto', p: 3, bgcolor: '#f8f9fa' }}>
+          <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
+            <Typography variant="h6" fontWeight="medium">
+              {courses[0].subsections.find(s => s.id === selectedSubsection)?.name || 'Discussions'}
             </Typography>
-            
-            <List dense disablePadding>
-              {categories.map((category) => (
-                <ListItem 
-                  key={category.id} 
-                  button 
-                  selected={selectedCategory === category.name}
-                  onClick={() => handleCategorySelect(category.name)}
-                  sx={{ 
-                    borderTopRightRadius: 0,
-                    borderBottomRightRadius: 0,
-                    borderTopLeftRadius: 24,
-                    borderBottomLeftRadius: 24,
-                    pr: 2,
-                    py: 0.75,
-                    '&.Mui-selected': {
-                      bgcolor: 'rgba(123, 31, 162, 0.08)',
-                      '&:hover': {
-                        bgcolor: 'rgba(123, 31, 162, 0.12)'
-                      }
-                    }
-                  }}
-                >
-                  <ListItemIcon sx={{ minWidth: 36 }}>
-                    {category.icon}
-                  </ListItemIcon>
-                  <ListItemText 
-                    primary={category.name} 
-                    primaryTypographyProps={{ 
-                      fontWeight: selectedCategory === category.name ? 'medium' : 'regular'
-                    }}
-                  />
-                </ListItem>
-              ))}
-            </List>
-            
-            <Divider sx={{ my: 2, mr: 2 }} />
-            
-            <Typography variant="body2" color="text.secondary" sx={{ mt: 2, mb: 1, fontWeight: 'medium' }}>
-              PINNED THREADS
-            </Typography>
-            
-            <List dense disablePadding>
-              <ListItem 
-                button 
-                sx={{ 
-                  borderTopRightRadius: 0,
-                  borderBottomRightRadius: 0,
-                  borderTopLeftRadius: 24,
-                  borderBottomLeftRadius: 24,
-                  pr: 2,
-                  py: 0.75
-                }}
-              >
-                <ListItemIcon sx={{ minWidth: 36 }}>
-                  <StarIcon fontSize="small" sx={{ color: '#f0b952' }} />
-                </ListItemIcon>
-                <ListItemText 
-                  primary="Course Syllabus" 
-                  primaryTypographyProps={{ 
-                    variant: 'body2',
-                    noWrap: true
-                  }}
-                />
-              </ListItem>
-              <ListItem 
-                button 
-                sx={{ 
-                  borderTopRightRadius: 0,
-                  borderBottomRightRadius: 0,
-                  borderTopLeftRadius: 24,
-                  borderBottomLeftRadius: 24,
-                  pr: 2,
-                  py: 0.75
-                }}
-              >
-                <ListItemIcon sx={{ minWidth: 36 }}>
-                  <StarIcon fontSize="small" sx={{ color: '#f0b952' }} />
-                </ListItemIcon>
-                <ListItemText 
-                  primary="Grading Policy" 
-                  primaryTypographyProps={{ 
-                    variant: 'body2',
-                    noWrap: true
-                  }}
-                />
-              </ListItem>
-            </List>
+            <Button 
+              variant="contained" 
+              startIcon={<ForumIcon />}
+              sx={{ 
+                bgcolor: '#7b1fa2',
+                borderRadius: 6,
+                px: 2,
+                '&:hover': {
+                  bgcolor: '#6a1b9a'
+                }
+              }}
+            >
+              New Thread
+            </Button>
           </Box>
-
-          {/* Thread List */}
-          <Box sx={{ flexGrow: 1, overflow: 'auto', p: 2, bgcolor: '#f8f9fa' }}>
-            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
-              <Typography variant="h6" fontWeight="medium">
-                {selectedCategory}
-              </Typography>
-              <Button 
-                variant="contained" 
-                startIcon={<ForumIcon />}
-                sx={{ 
-                  bgcolor: '#7b1fa2',
-                  borderRadius: 6,
-                  px: 2,
-                  '&:hover': {
-                    bgcolor: '#6a1b9a'
-                  }
-                }}
-              >
-                New Thread
-              </Button>
-            </Box>
-            
-            {/* Thread Cards */}
-            {filteredThreads.map((thread) => (
+          
+          {/* Thread Cards */}
+          {currentThreads.length > 0 ? (
+            currentThreads.map((thread) => (
               <Paper 
                 key={thread.id} 
                 elevation={0}
                 sx={{ 
-                  mb: 1.5, 
+                  mb: 2, 
                   border: '1px solid rgba(0, 0, 0, 0.08)',
                   borderRadius: 2,
                   overflow: 'hidden',
@@ -685,8 +667,30 @@ function Landing() {
                   </Box>
                 </Box>
               </Paper>
-            ))}
-          </Box>
+            ))
+          ) : (
+            <Box sx={{ textAlign: 'center', py: 5 }}>
+              <Typography variant="body1" color="text.secondary">
+                No discussions found for this topic.
+              </Typography>
+              <Button 
+                variant="outlined" 
+                startIcon={<ForumIcon />}
+                sx={{ 
+                  mt: 2,
+                  borderRadius: 6,
+                  color: '#7b1fa2',
+                  borderColor: '#7b1fa2',
+                  '&:hover': {
+                    borderColor: '#7b1fa2',
+                    bgcolor: 'rgba(123, 31, 162, 0.08)'
+                  }
+                }}
+              >
+                Start a New Discussion
+              </Button>
+            </Box>
+          )}
         </Box>
       </Box>
       
@@ -735,21 +739,7 @@ function Landing() {
             Notifications
           </Typography>
         </Box>
-        {notifications.map(notification => (
-          <MenuItem key={notification.id} sx={{ py: 1.5 }}>
-            <ListItemIcon>
-              <NotificationsIcon fontSize="small" sx={{ color: '#7b1fa2' }} />
-            </ListItemIcon>
-            <Box>
-              <Typography variant="body2">
-                {notification.text}
-              </Typography>
-              <Typography variant="caption" color="text.secondary">
-                {notification.time}
-              </Typography>
-            </Box>
-          </MenuItem>
-        ))}
+        {/* Notifications content */}
         <Divider />
         <Box sx={{ p: 1, textAlign: 'center' }}>
           <Button size="small" sx={{ color: '#7b1fa2' }}>
