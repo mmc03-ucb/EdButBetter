@@ -34,9 +34,9 @@ Start directly with the important announcements if any or with Summary of soluti
 
 Format the response in markdown with the following structure:
 # Important Announcements
-- List announcements with bullet points, using the thread title as a link to the thread ID like this: [Title](thread_id)
+- List announcements with bullet points, using the thread title as a link to the thread ID like this: [Title](thread/thread_id)
 - Do not show the thread ID in the text, only use it in the link
-- Example: [Lab 3 Assignment Updates](thread_Yo6sMzwOFrNtOOujb0aK)
+- Example: [Lab 3 Assignment Updates](thread/thread_abc123)
 - Use nested bullet points for details
 
 # What your peers are discussing
