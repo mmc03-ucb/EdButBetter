@@ -253,18 +253,19 @@ function SignInSignUp() {
           {isSignUp ? 'Create Account' : 'Sign In'}
         </Button>
         
-        <Box sx={{ position: 'relative', textAlign: 'center', margin: '20px 0' }}>
-          <Divider sx={{ margin: '20px 0' }} />
+        <Box sx={{ position: 'relative', textAlign: 'center', my: 3, height: 20 }}>
+          <Divider />
           <Typography 
             variant="body2" 
             sx={{ 
               position: 'absolute', 
-              top: '10px', 
+              top: -9,
               left: '50%', 
               transform: 'translateX(-50%)', 
               backgroundColor: 'white', 
               padding: '0 10px',
-              color: '#888'
+              color: '#888',
+              zIndex: 1
             }}
           >
             or
