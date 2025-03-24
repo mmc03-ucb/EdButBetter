@@ -35,6 +35,7 @@ import ThumbDownIcon from '@mui/icons-material/ThumbDown';
 import SendIcon from '@mui/icons-material/Send';
 import BookmarkIcon from '@mui/icons-material/Bookmark';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
+import Logo from './Logo';
 
 function ThreadDetail() {
   // Extract the threadId from URL parameters (/thread/:threadId)
@@ -48,37 +49,6 @@ function ThreadDetail() {
   const [thread, setThread] = useState(null); // Thread data object
   const [answers, setAnswers] = useState([]); // Array of answer objects
   const [newAnswer, setNewAnswer] = useState(''); // Content of the user's new answer
-
-  // Logo component - Reusable branded header element
-  const Logo = () => (
-    <Box display="flex" alignItems="center">
-      <Box
-        component="div"
-        sx={{
-          bgcolor: '#7b1fa2', // Purple background color
-          borderRadius: '50%',
-          width: 36,
-          height: 36,
-          display: 'flex',
-          justifyContent: 'center',
-          alignItems: 'center',
-          mr: 1
-        }}
-      >
-        <Typography variant="h6" sx={{ color: '#f0e8d6', fontWeight: 'bold', fontSize: '1rem' }}>S</Typography>
-      </Box>
-      <Typography 
-        variant="h6" 
-        sx={{
-          fontWeight: 'bold',
-          color: '#1a1a1a',
-          letterSpacing: '0.5px'
-        }}
-      >
-        HackaByte
-      </Typography>
-    </Box>
-  );
 
   // useEffect - Run on component mount and when threadId changes
   useEffect(() => {
@@ -316,7 +286,7 @@ This was really tricky for me too!`,
           >
             <ArrowBackIcon />
           </IconButton>
-          <Logo />
+          <Logo size="small" />
           <Box sx={{ flexGrow: 1 }} />
           <Button 
             variant="text"

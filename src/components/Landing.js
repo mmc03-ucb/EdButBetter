@@ -69,6 +69,7 @@ import NotificationsIcon from '@mui/icons-material/Notifications';
 import PeopleIcon from '@mui/icons-material/People';
 import UploadIcon from '@mui/icons-material/Upload';
 import Insights from './Insights';
+import Logo from './Logo';
 
 function Landing() {
   // State variables for managing UI interactions
@@ -353,37 +354,6 @@ function Landing() {
     }
   };
 
-  // Logo component - Reusable branded header element
-  const Logo = () => (
-    <Box display="flex" alignItems="center">
-      <Box
-        component="div"
-        sx={{
-          bgcolor: '#7b1fa2',
-          borderRadius: '50%',
-          width: 36,
-          height: 36,
-          display: 'flex',
-          justifyContent: 'center',
-          alignItems: 'center',
-          mr: 1
-        }}
-      >
-        <Typography variant="h6" sx={{ color: '#f0e8d6', fontWeight: 'bold', fontSize: '1rem' }}>S</Typography>
-      </Box>
-      <Typography 
-        variant="h6" 
-        sx={{
-          fontWeight: 'bold',
-          color: '#1a1a1a',
-          letterSpacing: '0.5px'
-        }}
-      >
-        HackaByte
-      </Typography>
-    </Box>
-  );
-
   // Course navigation data - Defines the course structure for the left sidebar
   // This includes the course name, code, and subsections (Assignment 1, Labs, etc.)
   const courses = [
@@ -598,7 +568,7 @@ function Landing() {
       >
         {/* Logo in the toolbar */}
         <Toolbar sx={{ borderBottom: '1px solid rgba(0, 0, 0, 0.08)' }}>
-          <Logo />
+          <Logo size="small" />
         </Toolbar>
         
         {/* Sidebar navigation content */}

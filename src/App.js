@@ -7,7 +7,6 @@ import React from 'react';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 // Material UI theming imports
 import { ThemeProvider, createTheme } from '@mui/material/styles';
-import { purple } from '@mui/material/colors';
 // Component imports for different pages
 import SignInSignUp from './components/SignInSignUp';
 import Landing from './components/Landing';
@@ -19,14 +18,15 @@ import ThreadDetail from './components/ThreadDetail';
 const theme = createTheme({
   palette: {
     primary: {
-      main: purple[700], // Purple color instead of green (main brand color)
+      main: '#5FE3D3', // Turquoise color from the logo
+      dark: '#4CC5B7', // Darker shade for hover states
     },
     secondary: {
-      main: '#f0b952', // Yellow/amber accent color for secondary elements
+      main: '#f0b952', // Keep the amber accent color
     },
     background: {
-      default: '#f5f0fa', // Light purple-tinted background for pages
-      paper: '#ffffff', // White background for cards and surfaces
+      default: '#f5f0fa', // Light background
+      paper: '#ffffff', // White background for cards
     },
     text: {
       primary: '#1a1a1a', // Dark gray for primary text
@@ -34,31 +34,30 @@ const theme = createTheme({
     },
   },
   typography: {
-    fontFamily: '"Poppins", "Roboto", "Helvetica", "Arial", sans-serif', // Font stack with Poppins as primary
+    fontFamily: '"Poppins", "Roboto", "Helvetica", "Arial", sans-serif',
     h4: {
-      fontWeight: 700, // Bold headers
+      fontWeight: 700,
     },
     button: {
-      textTransform: 'none', // No uppercase transformation for buttons
-      fontWeight: 600, // Semi-bold button text
+      textTransform: 'none',
+      fontWeight: 600,
     },
   },
   shape: {
-    borderRadius: 8, // Default border radius for elements
+    borderRadius: 8,
   },
   components: {
-    // Override styles for specific components
     MuiButton: {
       styleOverrides: {
         root: {
-          borderRadius: 30, // Rounded buttons
+          borderRadius: 30,
         },
       },
     },
     MuiPaper: {
       styleOverrides: {
         rounded: {
-          borderRadius: 16, // Rounded paper components (cards, etc.)
+          borderRadius: 16,
         },
       },
     },

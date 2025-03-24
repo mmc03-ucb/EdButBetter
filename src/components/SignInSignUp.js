@@ -29,6 +29,7 @@ import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
 import LockIcon from '@mui/icons-material/Lock';
 import EmailIcon from '@mui/icons-material/Email';
 import PersonIcon from '@mui/icons-material/Person';
+import Logo from './Logo';
 
 function SignInSignUp() {
   // State variables for form data and UI control
@@ -190,37 +191,6 @@ function SignInSignUp() {
     }
   };
 
-  // Logo component - Reusable branded header element
-  const Logo = () => (
-    <Box display="flex" alignItems="center" justifyContent="center" mb={3}>
-      <Box
-        component="div"
-        sx={{
-          bgcolor: '#7b1fa2',
-          borderRadius: '50%',
-          width: 50,
-          height: 50,
-          display: 'flex',
-          justifyContent: 'center',
-          alignItems: 'center',
-          mr: 1
-        }}
-      >
-        <Typography variant="h5" sx={{ color: '#f0e8d6', fontWeight: 'bold' }}>S</Typography>
-      </Box>
-      <Typography 
-        variant="h4" 
-        sx={{
-          fontWeight: 'bold',
-          color: '#1a1a1a',
-          letterSpacing: '0.5px'
-        }}
-      >
-        HackaByte
-      </Typography>
-    </Box>
-  );
-
   // Main component render
   return (
     <Box
@@ -255,7 +225,7 @@ function SignInSignUp() {
             <Box sx={{ position: 'absolute', left: -20, top: -20, width: 120, height: 120, borderRadius: '50%', bgcolor: 'rgba(255,255,255,0.1)' }} />
             <Box sx={{ position: 'absolute', right: -40, bottom: -40, width: 180, height: 180, borderRadius: '50%', bgcolor: 'rgba(255,255,255,0.1)' }} />
             
-            <Logo />
+            <Logo size="large" />
             
             <Typography 
               variant="h4" 
