@@ -82,34 +82,238 @@ function SignInSignUp() {
     }
   };
 
+  // Brand logo component in the style of the image
+  const Logo = () => (
+    <Box display="flex" alignItems="center" justifyContent="center" mb={2}>
+      <Box
+        component="div"
+        sx={{
+          bgcolor: '#7b1fa2',
+          borderRadius: '50%',
+          width: 50,
+          height: 50,
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
+          mr: 1
+        }}
+      >
+        <Typography variant="h6" sx={{ color: '#f0e8d6', fontWeight: 'bold' }}>S</Typography>
+      </Box>
+      <Typography 
+        variant="h4" 
+        sx={{
+          fontWeight: 'bold',
+          color: '#1a1a1a',
+          letterSpacing: '0.5px'
+        }}
+      >
+        HackaByte
+      </Typography>
+    </Box>
+  );
+
   return (
-    <Box display="flex" justifyContent="center" alignItems="center" height="100vh" bgcolor="#e0f7fa">
-      <Paper elevation={6} sx={{ padding: 4, borderRadius: 3, minWidth: 350, maxWidth: 400, textAlign: 'center' }}>
-        <Typography variant="h4" color="primary" gutterBottom>
-          {isSignUp ? 'Create Account' : 'Welcome'}
+    <Box 
+      display="flex" 
+      justifyContent="center" 
+      alignItems="center" 
+      height="100vh" 
+      sx={{ 
+        background: 'linear-gradient(135deg, #f5f0fa 0%, #e8e0f4 100%)',
+        padding: 3
+      }}
+    >
+      <Paper 
+        elevation={4} 
+        sx={{ 
+          padding: 4, 
+          borderRadius: 6, 
+          minWidth: 350, 
+          maxWidth: 430, 
+          textAlign: 'center',
+          backgroundColor: '#ffffff',
+          position: 'relative',
+          overflow: 'hidden'
+        }}
+      >
+        <Logo />
+        
+        <Typography 
+          variant="h4" 
+          sx={{ 
+            color: '#7b1fa2',
+            fontWeight: 'bold',
+            fontSize: '2rem',
+            mb: 3
+          }}
+        >
+          {isSignUp ? 'Create Account' : 'Welcome Back!'}
         </Typography>
-        <Divider sx={{ marginBottom: 2 }} />
+        
         {isSignUp && (
-          <TextField fullWidth margin="normal" label="Name" value={name} onChange={(e) => setName(e.target.value)} />
+          <TextField 
+            fullWidth 
+            margin="normal" 
+            label="Name" 
+            value={name} 
+            onChange={(e) => setName(e.target.value)}
+            sx={{
+              '& .MuiOutlinedInput-root': {
+                borderRadius: 3,
+                '&.Mui-focused fieldset': {
+                  borderColor: '#7b1fa2',
+                },
+              },
+              '& .MuiInputLabel-root.Mui-focused': {
+                color: '#7b1fa2',
+              }
+            }}
+          />
         )}
-        <TextField fullWidth margin="normal" label="Email" value={email} onChange={(e) => setEmail(e.target.value)} />
-        <TextField fullWidth margin="normal" label="Password" type="password" value={password} onChange={(e) => setPassword(e.target.value)} />
+        
+        <TextField 
+          fullWidth 
+          margin="normal" 
+          label="Email" 
+          value={email} 
+          onChange={(e) => setEmail(e.target.value)}
+          sx={{
+            '& .MuiOutlinedInput-root': {
+              borderRadius: 3,
+              '&.Mui-focused fieldset': {
+                borderColor: '#7b1fa2',
+              },
+            },
+            '& .MuiInputLabel-root.Mui-focused': {
+              color: '#7b1fa2',
+            }
+          }}
+        />
+        
+        <TextField 
+          fullWidth 
+          margin="normal" 
+          label="Password" 
+          type="password" 
+          value={password} 
+          onChange={(e) => setPassword(e.target.value)}
+          sx={{
+            '& .MuiOutlinedInput-root': {
+              borderRadius: 3,
+              '&.Mui-focused fieldset': {
+                borderColor: '#7b1fa2',
+              },
+            },
+            '& .MuiInputLabel-root.Mui-focused': {
+              color: '#7b1fa2',
+            }
+          }}
+        />
+        
         {isSignUp && (
-          <TextField fullWidth margin="normal" label="Confirm Password" type="password" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} />
+          <TextField 
+            fullWidth 
+            margin="normal" 
+            label="Confirm Password" 
+            type="password" 
+            value={confirmPassword} 
+            onChange={(e) => setConfirmPassword(e.target.value)}
+            sx={{
+              '& .MuiOutlinedInput-root': {
+                borderRadius: 3,
+                '&.Mui-focused fieldset': {
+                  borderColor: '#7b1fa2',
+                },
+              },
+              '& .MuiInputLabel-root.Mui-focused': {
+                color: '#7b1fa2',
+              }
+            }}
+          />
         )}
-        <Button fullWidth variant="contained" color="primary" onClick={isSignUp ? handleSignUp : handleSignIn} sx={{ marginTop: 2, padding: 1.2 }}>
-          {isSignUp ? 'Sign Up' : 'Sign In'}
+        
+        <Button 
+          fullWidth 
+          variant="contained" 
+          onClick={isSignUp ? handleSignUp : handleSignIn} 
+          sx={{ 
+            marginTop: 3, 
+            padding: 1.2,
+            borderRadius: 6,
+            backgroundColor: '#7b1fa2',
+            fontSize: '1rem',
+            fontWeight: 'bold',
+            textTransform: 'none',
+            '&:hover': {
+              backgroundColor: '#6a1b9a',
+            }
+          }}
+        >
+          {isSignUp ? 'Create Account' : 'Sign In'}
         </Button>
-        <Button fullWidth variant="outlined" color="primary" startIcon={<GoogleIcon />} onClick={handleGoogleSignIn} sx={{ marginTop: 2, padding: 1.2 }}>
-          Sign In with Google
+        
+        <Box sx={{ position: 'relative', textAlign: 'center', my: 3, height: 20 }}>
+          <Divider />
+          <Typography 
+            variant="body2" 
+            sx={{ 
+              position: 'absolute', 
+              top: -9,
+              left: '50%', 
+              transform: 'translateX(-50%)', 
+              backgroundColor: 'white', 
+              padding: '0 10px',
+              color: '#888',
+              zIndex: 1
+            }}
+          >
+            or
+          </Typography>
+        </Box>
+        
+        <Button 
+          fullWidth 
+          variant="outlined" 
+          startIcon={<GoogleIcon />} 
+          onClick={handleGoogleSignIn} 
+          sx={{ 
+            padding: 1.2,
+            borderRadius: 6,
+            borderColor: '#e2e8f0',
+            color: '#4a5568',
+            textTransform: 'none',
+            fontWeight: 'medium',
+            boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
+            '&:hover': {
+              backgroundColor: '#f8f9fa',
+              borderColor: '#cbd5e0',
+            }
+          }}
+        >
+          Continue with Google
         </Button>
-        <Typography variant="body2" sx={{ marginTop: 2 }} onClick={handleToggle} color="textSecondary" style={{ cursor: 'pointer' }}>
-          {isSignUp ? 'Already have an account? Sign In' : 'Don’t have an account? Sign Up'}
+        
+        <Typography 
+          variant="body1" 
+          sx={{ 
+            marginTop: 3,
+            color: '#7b1fa2',
+            fontWeight: 'medium',
+            cursor: 'pointer',
+            '&:hover': {
+              textDecoration: 'underline'
+            }
+          }} 
+          onClick={handleToggle}
+        >
+          {isSignUp ? 'Already have an account? Sign In' : "Don't have an account? Sign Up"}
         </Typography>
+
       </Paper>
 
       <Snackbar open={snackbarOpen} autoHideDuration={4000} onClose={handleSnackbarClose} anchorOrigin={{ vertical: 'top', horizontal: 'center' }}>
-        <Alert onClose={handleSnackbarClose} severity="error" sx={{ width: '100%' }}>
+        <Alert onClose={handleSnackbarClose} severity="error" sx={{ width: '100%', borderRadius: 3 }}>
           {error}
         </Alert>
       </Snackbar>
