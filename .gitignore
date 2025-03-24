@@ -77,3 +77,6 @@ firebase-debug.log
 public/static/
 *.bak
 *.old
+
+# Firebase Config (Sensitive Information)
+src/firebase/config.js
