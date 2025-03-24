@@ -164,7 +164,7 @@ function Landing() {
       <Box
         component="div"
         sx={{
-          bgcolor: '#35774b',
+          bgcolor: '#7b1fa2',
           borderRadius: '50%',
           width: 36,
           height: 36,
@@ -312,7 +312,7 @@ function Landing() {
   if (loading) {
     return (
       <Box display="flex" justifyContent="center" alignItems="center" height="100vh">
-        <CircularProgress sx={{ color: '#35774b' }} />
+        <CircularProgress sx={{ color: '#7b1fa2' }} />
         <Typography variant="h6" marginLeft={2}>Loading...</Typography>
       </Box>
     );
@@ -366,9 +366,9 @@ function Landing() {
                   borderRadius: 2, 
                   mb: 0.5,
                   '&.Mui-selected': {
-                    bgcolor: 'rgba(53, 119, 75, 0.08)',
+                    bgcolor: 'rgba(123, 31, 162, 0.08)',
                     '&:hover': {
-                      bgcolor: 'rgba(53, 119, 75, 0.12)'
+                      bgcolor: 'rgba(123, 31, 162, 0.12)'
                     }
                   }
                 }}
@@ -428,7 +428,7 @@ function Landing() {
           }}
         >
           <Toolbar>
-            <Typography variant="h6" component="div" fontWeight="bold" sx={{ color: '#35774b' }}>
+            <Typography variant="h6" component="div" fontWeight="bold" sx={{ color: '#7b1fa2' }}>
               CSE-301: Web Development Bootcamp
             </Typography>
             <Box sx={{ flexGrow: 1 }} />
@@ -475,7 +475,7 @@ function Landing() {
                 size="small"
                 sx={{ ml: 1 }}
               >
-                <Avatar sx={{ width: 32, height: 32, bgcolor: '#35774b' }}>
+                <Avatar sx={{ width: 32, height: 32, bgcolor: '#7b1fa2' }}>
                   {userName.charAt(0).toUpperCase()}
                 </Avatar>
               </IconButton>
@@ -514,9 +514,9 @@ function Landing() {
                     pr: 2,
                     py: 0.75,
                     '&.Mui-selected': {
-                      bgcolor: 'rgba(53, 119, 75, 0.08)',
+                      bgcolor: 'rgba(123, 31, 162, 0.08)',
                       '&:hover': {
-                        bgcolor: 'rgba(53, 119, 75, 0.12)'
+                        bgcolor: 'rgba(123, 31, 162, 0.12)'
                       }
                     }
                   }}
@@ -598,11 +598,11 @@ function Landing() {
                 variant="contained" 
                 startIcon={<ForumIcon />}
                 sx={{ 
-                  bgcolor: '#35774b',
+                  bgcolor: '#7b1fa2',
                   borderRadius: 6,
                   px: 2,
                   '&:hover': {
-                    bgcolor: '#2a5f3b'
+                    bgcolor: '#6a1b9a'
                   }
                 }}
               >
@@ -629,7 +629,7 @@ function Landing() {
               >
                 <Box sx={{ display: 'flex', p: 2 }}>
                   {/* Left - Avatar */}
-                  <Avatar sx={{ width: 40, height: 40, bgcolor: thread.id % 2 ? '#35774b' : '#f0b952' }}>
+                  <Avatar sx={{ width: 40, height: 40, bgcolor: thread.id % 2 ? '#7b1fa2' : '#f0b952' }}>
                     {thread.authorAvatar}
                   </Avatar>
                   
@@ -660,11 +660,11 @@ function Landing() {
                           mr: 1.5, 
                           bgcolor: thread.category === 'Questions' ? 'rgba(25, 118, 210, 0.1)' : 
                                   thread.category === 'Announcements' ? 'rgba(240, 185, 82, 0.1)' :
-                                  thread.category === 'Resources' ? 'rgba(53, 119, 75, 0.1)' : 
+                                  thread.category === 'Resources' ? 'rgba(123, 31, 162, 0.1)' : 
                                   'rgba(0, 0, 0, 0.06)',
                           color: thread.category === 'Questions' ? 'primary.main' : 
                                 thread.category === 'Announcements' ? '#d68f00' :
-                                thread.category === 'Resources' ? '#35774b' : 
+                                thread.category === 'Resources' ? '#7b1fa2' : 
                                 'text.secondary',
                           fontWeight: 'medium'
                         }} 
@@ -738,7 +738,7 @@ function Landing() {
         {notifications.map(notification => (
           <MenuItem key={notification.id} sx={{ py: 1.5 }}>
             <ListItemIcon>
-              <NotificationsIcon fontSize="small" sx={{ color: '#35774b' }} />
+              <NotificationsIcon fontSize="small" sx={{ color: '#7b1fa2' }} />
             </ListItemIcon>
             <Box>
               <Typography variant="body2">
@@ -752,7 +752,7 @@ function Landing() {
         ))}
         <Divider />
         <Box sx={{ p: 1, textAlign: 'center' }}>
-          <Button size="small" sx={{ color: '#35774b' }}>
+          <Button size="small" sx={{ color: '#7b1fa2' }}>
             View All
           </Button>
         </Box>

@@ -5,7 +5,7 @@ body {
     sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  background-color: #f0e8d6;
+  background-color: #f5f0fa;
   color: #1a1a1a;
 }
 
@@ -19,16 +19,16 @@ code {
 
 /* Custom classes for buttons and elements styled like the bakery website */
 .swirlzy-primary-btn {
-  background-color: #35774b !important;
+  background-color: #7b1fa2 !important;
   color: white !important;
   border-radius: 30px !important;
   font-weight: 600 !important;
   text-transform: none !important;
-  box-shadow: 0 4px 10px rgba(53, 119, 75, 0.2) !important;
+  box-shadow: 0 4px 10px rgba(123, 31, 162, 0.2) !important;
 }
 
 .swirlzy-primary-btn:hover {
-  background-color: #2a5f3b !important;
+  background-color: #6a1b9a !important;
 }
 
 .swirlzy-rounded-card {

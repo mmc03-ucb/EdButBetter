@@ -88,7 +88,7 @@ function SignInSignUp() {
       <Box
         component="div"
         sx={{
-          bgcolor: '#35774b',
+          bgcolor: '#7b1fa2',
           borderRadius: '50%',
           width: 50,
           height: 50,
@@ -120,7 +120,7 @@ function SignInSignUp() {
       alignItems="center" 
       height="100vh" 
       sx={{ 
-        background: 'linear-gradient(135deg, #f0e8d6 0%, #e8f4f5 100%)',
+        background: 'linear-gradient(135deg, #f5f0fa 0%, #e8e0f4 100%)',
         padding: 3
       }}
     >
@@ -142,7 +142,7 @@ function SignInSignUp() {
         <Typography 
           variant="h4" 
           sx={{ 
-            color: '#35774b',
+            color: '#7b1fa2',
             fontWeight: 'bold',
             fontSize: '2rem',
             mb: 3
@@ -162,11 +162,11 @@ function SignInSignUp() {
               '& .MuiOutlinedInput-root': {
                 borderRadius: 3,
                 '&.Mui-focused fieldset': {
-                  borderColor: '#35774b',
+                  borderColor: '#7b1fa2',
                 },
               },
               '& .MuiInputLabel-root.Mui-focused': {
-                color: '#35774b',
+                color: '#7b1fa2',
               }
             }}
           />
@@ -182,11 +182,11 @@ function SignInSignUp() {
             '& .MuiOutlinedInput-root': {
               borderRadius: 3,
               '&.Mui-focused fieldset': {
-                borderColor: '#35774b',
+                borderColor: '#7b1fa2',
               },
             },
             '& .MuiInputLabel-root.Mui-focused': {
-              color: '#35774b',
+              color: '#7b1fa2',
             }
           }}
         />
@@ -202,11 +202,11 @@ function SignInSignUp() {
             '& .MuiOutlinedInput-root': {
               borderRadius: 3,
               '&.Mui-focused fieldset': {
-                borderColor: '#35774b',
+                borderColor: '#7b1fa2',
               },
             },
             '& .MuiInputLabel-root.Mui-focused': {
-              color: '#35774b',
+              color: '#7b1fa2',
             }
           }}
         />
@@ -223,11 +223,11 @@ function SignInSignUp() {
               '& .MuiOutlinedInput-root': {
                 borderRadius: 3,
                 '&.Mui-focused fieldset': {
-                  borderColor: '#35774b',
+                  borderColor: '#7b1fa2',
                 },
               },
               '& .MuiInputLabel-root.Mui-focused': {
-                color: '#35774b',
+                color: '#7b1fa2',
               }
             }}
           />
@@ -241,12 +241,12 @@ function SignInSignUp() {
             marginTop: 3, 
             padding: 1.2,
             borderRadius: 6,
-            backgroundColor: '#35774b',
+            backgroundColor: '#7b1fa2',
             fontSize: '1rem',
             fontWeight: 'bold',
             textTransform: 'none',
             '&:hover': {
-              backgroundColor: '#2a5f3b',
+              backgroundColor: '#6a1b9a',
             }
           }}
         >
@@ -297,7 +297,7 @@ function SignInSignUp() {
           variant="body1" 
           sx={{ 
             marginTop: 3,
-            color: '#35774b',
+            color: '#7b1fa2',
             fontWeight: 'medium',
             cursor: 'pointer',
             '&:hover': {

@@ -134,7 +134,7 @@ function Profile() {
       <Box
         component="div"
         sx={{
-          bgcolor: '#35774b',
+          bgcolor: '#7b1fa2',
           borderRadius: '50%',
           width: 40,
           height: 40,
@@ -154,7 +154,7 @@ function Profile() {
           letterSpacing: '0.5px'
         }}
       >
-        SWIRLZY
+        HackaByte
       </Typography>
     </Box>
   );
@@ -185,14 +185,14 @@ function Profile() {
   if (loading) {
     return (
       <Box display="flex" justifyContent="center" alignItems="center" height="100vh">
-        <CircularProgress sx={{ color: '#35774b' }} />
+        <CircularProgress sx={{ color: '#7b1fa2' }} />
         <Typography variant="h6" marginLeft={2}>Loading Profile...</Typography>
       </Box>
     );
   }
 
   return (
-    <Box sx={{ bgcolor: '#f0e8d6', minHeight: '100vh' }}>
+    <Box sx={{ bgcolor: '#f5f0fa', minHeight: '100vh' }}>
       {/* Navigation Bar */}
       <AppBar position="static" sx={{ bgcolor: 'white', color: 'text.primary', boxShadow: '0 2px 10px rgba(0,0,0,0.05)' }}>
         <Toolbar>
@@ -238,7 +238,7 @@ function Profile() {
               height: '100%'
             }}>
               <Box sx={{ 
-                bgcolor: '#35774b', 
+                bgcolor: '#7b1fa2', 
                 height: 100, 
                 width: '100%', 
                 position: 'relative' 
@@ -277,11 +277,11 @@ function Profile() {
                           '& .MuiOutlinedInput-root': {
                             borderRadius: 3,
                             '&.Mui-focused fieldset': {
-                              borderColor: '#35774b',
+                              borderColor: '#7b1fa2',
                             },
                           },
                           '& .MuiInputLabel-root.Mui-focused': {
-                            color: '#35774b',
+                            color: '#7b1fa2',
                           }
                         }}
                       />
@@ -295,11 +295,11 @@ function Profile() {
                           '& .MuiOutlinedInput-root': {
                             borderRadius: 3,
                             '&.Mui-focused fieldset': {
-                              borderColor: '#35774b',
+                              borderColor: '#7b1fa2',
                             },
                           },
                           '& .MuiInputLabel-root.Mui-focused': {
-                            color: '#35774b',
+                            color: '#7b1fa2',
                           }
                         }}
                       />
@@ -327,11 +327,11 @@ function Profile() {
                           variant="outlined"
                           sx={{ 
                             borderRadius: 4,
-                            color: '#35774b',
-                            borderColor: '#35774b',
+                            color: '#7b1fa2',
+                            borderColor: '#7b1fa2',
                             '&:hover': {
-                              borderColor: '#35774b',
-                              bgcolor: 'rgba(53, 119, 75, 0.08)'
+                              borderColor: '#7b1fa2',
+                              bgcolor: 'rgba(123, 31, 162, 0.08)'
                             }
                           }}
                         >
@@ -342,11 +342,11 @@ function Profile() {
                           variant="outlined"
                           sx={{ 
                             borderRadius: 4,
-                            color: '#35774b',
-                            borderColor: '#35774b',
+                            color: '#7b1fa2',
+                            borderColor: '#7b1fa2',
                             '&:hover': {
-                              borderColor: '#35774b',
-                              bgcolor: 'rgba(53, 119, 75, 0.08)'
+                              borderColor: '#7b1fa2',
+                              bgcolor: 'rgba(123, 31, 162, 0.08)'
                             }
                           }}
                         >
@@ -366,9 +366,9 @@ function Profile() {
                         onClick={handleSave}
                         sx={{ 
                           borderRadius: 6,
-                          bgcolor: '#35774b',
+                          bgcolor: '#7b1fa2',
                           '&:hover': {
-                            bgcolor: '#2a5f3b'
+                            bgcolor: '#6a1b9a'
                           }
                         }}
                       >
@@ -381,11 +381,11 @@ function Profile() {
                         onClick={toggleEditing}
                         sx={{ 
                           borderRadius: 6,
-                          color: '#35774b',
-                          borderColor: '#35774b',
+                          color: '#7b1fa2',
+                          borderColor: '#7b1fa2',
                           '&:hover': {
-                            borderColor: '#35774b',
-                            bgcolor: 'rgba(53, 119, 75, 0.08)'
+                            borderColor: '#7b1fa2',
+                            bgcolor: 'rgba(123, 31, 162, 0.08)'
                           }
                         }}
                       >
@@ -427,10 +427,10 @@ function Profile() {
                       fontSize: '1rem'
                     },
                     '& .Mui-selected': {
-                      color: '#35774b',
+                      color: '#7b1fa2',
                     },
                     '& .MuiTabs-indicator': {
-                      backgroundColor: '#35774b',
+                      backgroundColor: '#7b1fa2',
                     },
                   }}
                 >
@@ -471,10 +471,10 @@ function Profile() {
                             variant="contained" 
                             size="small"
                             sx={{ 
-                              bgcolor: '#35774b',
+                              bgcolor: '#7b1fa2',
                               borderRadius: 6,
                               '&:hover': {
-                                bgcolor: '#2a5f3b'
+                                bgcolor: '#6a1b9a'
                               }
                             }}
                           >
@@ -493,7 +493,7 @@ function Profile() {
                           <Box 
                             sx={{ 
                               height: '100%', 
-                              bgcolor: '#35774b', 
+                              bgcolor: '#7b1fa2', 
                               width: `${course.progress}%`
                             }} 
                           />
@@ -507,11 +507,11 @@ function Profile() {
                       variant="outlined"
                       sx={{ 
                         borderRadius: 6,
-                        color: '#35774b',
-                        borderColor: '#35774b',
+                        color: '#7b1fa2',
+                        borderColor: '#7b1fa2',
                         '&:hover': {
-                          borderColor: '#35774b',
-                          bgcolor: 'rgba(53, 119, 75, 0.08)'
+                          borderColor: '#7b1fa2',
+                          bgcolor: 'rgba(123, 31, 162, 0.08)'
                         }
                       }}
                     >
@@ -573,11 +573,11 @@ function Profile() {
                           '& .MuiOutlinedInput-root': {
                             borderRadius: 3,
                             '&.Mui-focused fieldset': {
-                              borderColor: '#35774b',
+                              borderColor: '#7b1fa2',
                             },
                           },
                           '& .MuiInputLabel-root.Mui-focused': {
-                            color: '#35774b',
+                            color: '#7b1fa2',
                           }
                         }}
                       />
@@ -592,11 +592,11 @@ function Profile() {
                           '& .MuiOutlinedInput-root': {
                             borderRadius: 3,
                             '&.Mui-focused fieldset': {
-                              borderColor: '#35774b',
+                              borderColor: '#7b1fa2',
                             },
                           },
                           '& .MuiInputLabel-root.Mui-focused': {
-                            color: '#35774b',
+                            color: '#7b1fa2',
                           }
                         }}
                       />
@@ -610,11 +610,11 @@ function Profile() {
                           '& .MuiOutlinedInput-root': {
                             borderRadius: 3,
                             '&.Mui-focused fieldset': {
-                              borderColor: '#35774b',
+                              borderColor: '#7b1fa2',
                             },
                           },
                           '& .MuiInputLabel-root.Mui-focused': {
-                            color: '#35774b',
+                            color: '#7b1fa2',
                           }
                         }}
                       />
@@ -625,9 +625,9 @@ function Profile() {
                         fullWidth
                         sx={{ 
                           borderRadius: 6,
-                          bgcolor: '#35774b',
+                          bgcolor: '#7b1fa2',
                           '&:hover': {
-                            bgcolor: '#2a5f3b'
+                            bgcolor: '#6a1b9a'
                           },
                           mt: 2
                         }}

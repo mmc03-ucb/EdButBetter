@@ -1,6 +1,7 @@
 import React from 'react';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
+import { purple } from '@mui/material/colors';
 import SignInSignUp from './components/SignInSignUp';
 import Landing from './components/Landing';
 import Profile from './components/Profile';
@@ -9,13 +10,13 @@ import Profile from './components/Profile';
 const theme = createTheme({
   palette: {
     primary: {
-      main: '#35774b', // Green color from the bakery website
+      main: purple[700], // Purple color instead of green
     },
     secondary: {
       main: '#f0b952', // Yellow/amber accent color
     },
     background: {
-      default: '#f0e8d6', // Light beige background
+      default: '#f5f0fa', // Light purple-tinted background
       paper: '#ffffff',
     },
     text: {
