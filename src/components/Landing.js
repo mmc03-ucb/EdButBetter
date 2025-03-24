@@ -1,3 +1,7 @@
+// Landing.js - Main forum interface showing course content and discussions
+// This component displays the main educational forum interface with navigation, thread listings
+// and allows users to select different subsections of the course
+
 import React, { useState, useEffect } from 'react';
 import { 
   Typography, 
@@ -65,15 +69,17 @@ import NotificationsIcon from '@mui/icons-material/Notifications';
 import PeopleIcon from '@mui/icons-material/People';
 
 function Landing() {
-  const [open, setOpen] = useState(false);
-  const [userName, setUserName] = useState('');
-  const [loading, setLoading] = useState(true);
-  const [userMenuAnchor, setUserMenuAnchor] = useState(null);
-  const [notificationsMenuAnchor, setNotificationsMenuAnchor] = useState(null);
-  const [selectedSubsection, setSelectedSubsection] = useState('assignment1');
+  // State variables for managing UI interactions
+  const [open, setOpen] = useState(false); // Controls delete confirmation dialog
+  const [userName, setUserName] = useState(''); // Current logged-in user's name
+  const [loading, setLoading] = useState(true); // Loading state for initial data fetch
+  const [userMenuAnchor, setUserMenuAnchor] = useState(null); // Anchor element for user dropdown menu
+  const [notificationsMenuAnchor, setNotificationsMenuAnchor] = useState(null); // Anchor for notifications dropdown
+  const [selectedSubsection, setSelectedSubsection] = useState('assignment1'); // Currently selected course subsection
 
-  const drawerWidth = 240;
+  const drawerWidth = 240; // Width of the left sidebar navigation drawer
 
+  // useEffect hook runs when component mounts to fetch user data and set up auth listener
   useEffect(() => {
     const fetchUserName = async (user) => {
       try {
@@ -88,6 +94,8 @@ function Landing() {
       }
     };
 
+    // Firebase authentication state listener
+    // Redirects to login page if user is not authenticated
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       if (user) {
         fetchUserName(user);
@@ -96,9 +104,10 @@ function Landing() {
       }
     });
 
-    return () => unsubscribe();
+    return () => unsubscribe(); // Clean up auth listener when component unmounts
   }, []);
 
+  // Handler for user logout
   const handleLogout = async () => {
     try {
       await signOut(auth);
@@ -108,6 +117,7 @@ function Landing() {
     }
   };
 
+  // Handler for deleting user account and all associated data
   const handleDeleteUser = async () => {
     try {
       const user = auth.currentUser;
@@ -120,6 +130,7 @@ function Landing() {
     }
   };
 
+  // Dialog control handlers
   const handleOpenDialog = () => {
     setOpen(true);
   };
@@ -133,6 +144,7 @@ function Landing() {
     handleCloseDialog();
   };
 
+  // User menu handlers
   const handleUserMenuOpen = (event) => {
     setUserMenuAnchor(event.currentTarget);
   };
@@ -141,6 +153,7 @@ function Landing() {
     setUserMenuAnchor(null);
   };
 
+  // Notification menu handlers
   const handleNotificationsMenuOpen = (event) => {
     setNotificationsMenuAnchor(event.currentTarget);
   };
@@ -149,11 +162,20 @@ function Landing() {
     setNotificationsMenuAnchor(null);
   };
 
+  // Handler for selecting a course subsection (Assignment, Lab, General)
+  // Updates the selectedSubsection state which controls which threads are displayed
   const handleSubsectionSelect = (subsectionId) => {
     setSelectedSubsection(subsectionId);
   };
 
-  // Logo component in the style of the image
+  // Function that navigates to the thread detail page when a thread is clicked
+  // Uses the thread's ID to create the URL for the thread detail page
+  const handleThreadClick = (threadId) => {
+    // Navigate to the thread detail page with the thread ID as URL parameter
+    window.location.href = `/thread/${threadId}`;
+  };
+
+  // Logo component - Reusable branded header element
   const Logo = () => (
     <Box display="flex" alignItems="center">
       <Box
@@ -184,7 +206,8 @@ function Landing() {
     </Box>
   );
 
-  // Course navigation items
+  // Course navigation data - Defines the course structure for the left sidebar
+  // This includes the course name, code, and subsections (Assignment 1, Labs, etc.)
   const courses = [
     { 
       id: 1, 
@@ -202,8 +225,10 @@ function Landing() {
     }
   ];
 
-  // Thread data by subsection (mock)
+  // Thread data organized by subsection - Mock data for each course section
+  // Each subsection has its own array of thread objects with metadata
   const threadsBySubsection = {
+    // Assignment 1 threads
     assignment1: [
       {
         id: 1,
@@ -245,6 +270,7 @@ function Landing() {
         preview: 'The grading criteria for Assignment 1 will focus on code quality, responsive design, and proper implementation of React components...'
       }
     ],
+    // Lab 1 threads
     lab1: [
       {
         id: 7,
@@ -273,6 +299,7 @@ function Landing() {
         preview: 'Which VSCode extensions are recommended for React development? The lab instructions mention a few but I\'m wondering if there are others.'
       }
     ],
+    // Lab 2 threads
     lab2: [
       {
         id: 2,
@@ -301,6 +328,7 @@ function Landing() {
         preview: 'I\'m struggling with implementing useEffect with dependencies for the lab exercise. Could someone explain the concept?'
       }
     ],
+    // Lab 3 threads
     lab3: [
       {
         id: 4,
@@ -329,6 +357,7 @@ function Landing() {
         preview: 'I\'m having trouble with nested routes in the Lab 3 exercises. Has anyone figured out how to properly implement them?'
       }
     ],
+    // General threads
     general: [
       {
         id: 10,
@@ -359,9 +388,11 @@ function Landing() {
     ]
   };
 
-  // Get threads based on selected subsection
+  // Get threads for the currently selected subsection
+  // This filters the threads to show only those relevant to the selected section
   const currentThreads = threadsBySubsection[selectedSubsection] || [];
 
+  // Loading state - Show spinner while data is being fetched
   if (loading) {
     return (
       <Box display="flex" justifyContent="center" alignItems="center" height="100vh">
@@ -373,7 +404,8 @@ function Landing() {
 
   return (
     <Box sx={{ display: 'flex', minHeight: '100vh' }}>
-      {/* Left Sidebar - Course Navigation */}
+      {/* Left Sidebar - Course Navigation
+          This drawer shows the course hierarchy and allows navigation between sections */}
       <Drawer
         variant="permanent"
         sx={{
@@ -387,11 +419,15 @@ function Landing() {
           },
         }}
       >
+        {/* Logo in the toolbar */}
         <Toolbar sx={{ borderBottom: '1px solid rgba(0, 0, 0, 0.08)' }}>
           <Logo />
         </Toolbar>
+        
+        {/* Sidebar navigation content */}
         <Box sx={{ overflow: 'auto', p: 1 }}>
           <List dense>
+            {/* Home navigation item */}
             <ListItem button sx={{ borderRadius: 2, mb: 1 }}>
               <ListItemIcon sx={{ minWidth: 36 }}>
                 <HomeIcon fontSize="small" />
@@ -399,14 +435,17 @@ function Landing() {
               <ListItemText primary="Home" primaryTypographyProps={{ fontWeight: 'medium' }} />
             </ListItem>
             
+            {/* Course section header */}
             <Box sx={{ px: 2, mt: 2, mb: 1 }}>
               <Typography variant="body2" color="text.secondary" fontWeight="medium">
                 MY COURSE
               </Typography>
             </Box>
             
+            {/* Course list with nested subsections */}
             {courses.map((course) => (
               <React.Fragment key={course.id}>
+                {/* Course item (parent) */}
                 <ListItem 
                   button 
                   selected={true}
@@ -443,7 +482,7 @@ function Landing() {
                   />
                 </ListItem>
                 
-                {/* Course subsections */}
+                {/* Course subsections (Assignment 1, Labs, etc.) */}
                 <List component="div" disablePadding dense>
                   {course.subsections.map((subsection) => (
                     <ListItem 
@@ -484,6 +523,7 @@ function Landing() {
             
             <Divider sx={{ my: 2 }} />
             
+            {/* Settings and logout buttons */}
             <ListItem button sx={{ borderRadius: 2, mb: 1 }}>
               <ListItemIcon sx={{ minWidth: 36 }}>
                 <SettingsIcon fontSize="small" />
@@ -501,9 +541,9 @@ function Landing() {
         </Box>
       </Drawer>
 
-      {/* Main Content */}
+      {/* Main Content Area - Contains top bar and thread listing */}
       <Box sx={{ flexGrow: 1, bgcolor: '#f8f9fa', display: 'flex', flexDirection: 'column' }}>
-        {/* Top App Bar */}
+        {/* Top App Bar - Contains course title, search, and user controls */}
         <AppBar 
           position="static" 
           color="default" 
@@ -514,6 +554,7 @@ function Landing() {
           }}
         >
           <Toolbar>
+            {/* Course title */}
             <Typography variant="h6" component="div" fontWeight="bold" sx={{ color: '#7b1fa2' }}>
               CSE-301: Web Development Bootcamp
             </Typography>
@@ -541,7 +582,7 @@ function Landing() {
               />
             </Paper>
             
-            {/* Notification Icon */}
+            {/* Notification Icon with badge */}
             <Tooltip title="Notifications">
               <IconButton 
                 onClick={handleNotificationsMenuOpen}
@@ -554,7 +595,7 @@ function Landing() {
               </IconButton>
             </Tooltip>
             
-            {/* User Avatar */}
+            {/* User Avatar for account menu */}
             <Tooltip title="Account">
               <IconButton 
                 onClick={handleUserMenuOpen}
@@ -569,8 +610,9 @@ function Landing() {
           </Toolbar>
         </AppBar>
 
-        {/* Main Content Area */}
+        {/* Thread List Area - Shows threads for the selected subsection */}
         <Box sx={{ flexGrow: 1, overflow: 'auto', p: 3, bgcolor: '#f8f9fa' }}>
+          {/* Thread section header with new thread button */}
           <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
             <Typography variant="h6" fontWeight="medium">
               {courses[0].subsections.find(s => s.id === selectedSubsection)?.name || 'Discussions'}
@@ -591,18 +633,20 @@ function Landing() {
             </Button>
           </Box>
           
-          {/* Thread Cards */}
+          {/* Thread Cards - Each card shows a discussion thread and is clickable */}
           {currentThreads.length > 0 ? (
             currentThreads.map((thread) => (
               <Paper 
                 key={thread.id} 
                 elevation={0}
+                onClick={() => handleThreadClick(thread.id)} // Click handler for navigation
                 sx={{ 
                   mb: 2, 
                   border: '1px solid rgba(0, 0, 0, 0.08)',
                   borderRadius: 2,
                   overflow: 'hidden',
                   transition: 'all 0.2s',
+                  cursor: 'pointer', // Cursor indicates clickable
                   '&:hover': {
                     borderColor: 'rgba(0, 0, 0, 0.15)',
                     boxShadow: '0 1px 3px rgba(0,0,0,0.05)'
@@ -610,13 +654,14 @@ function Landing() {
                 }}
               >
                 <Box sx={{ display: 'flex', p: 2 }}>
-                  {/* Left - Avatar */}
+                  {/* Thread author avatar */}
                   <Avatar sx={{ width: 40, height: 40, bgcolor: thread.id % 2 ? '#7b1fa2' : '#f0b952' }}>
                     {thread.authorAvatar}
                   </Avatar>
                   
-                  {/* Middle - Thread Content */}
+                  {/* Thread content and metadata */}
                   <Box sx={{ ml: 2, flexGrow: 1 }}>
+                    {/* Thread title with solved indicator if applicable */}
                     <Box sx={{ display: 'flex', alignItems: 'center', mb: 0.5 }}>
                       <Typography variant="subtitle1" fontWeight="medium">
                         {thread.title}
@@ -630,10 +675,12 @@ function Landing() {
                       )}
                     </Box>
                     
+                    {/* Thread preview/snippet */}
                     <Typography variant="body2" color="text.secondary" sx={{ mb: 1, opacity: 0.85 }}>
                       {thread.preview}
                     </Typography>
                     
+                    {/* Thread metadata (category, author, date, reply count, etc.) */}
                     <Box sx={{ display: 'flex', alignItems: 'center' }}>
                       <Chip 
                         label={thread.category} 
@@ -669,6 +716,7 @@ function Landing() {
               </Paper>
             ))
           ) : (
+            // Empty state when no threads are found
             <Box sx={{ textAlign: 'center', py: 5 }}>
               <Typography variant="body1" color="text.secondary">
                 No discussions found for this topic.
@@ -694,7 +742,7 @@ function Landing() {
         </Box>
       </Box>
       
-      {/* User Menu */}
+      {/* User Menu - Dropdown for profile, logout, delete account */}
       <Menu
         anchorEl={userMenuAnchor}
         open={Boolean(userMenuAnchor)}
@@ -723,7 +771,7 @@ function Landing() {
         </MenuItem>
       </Menu>
       
-      {/* Notifications Menu */}
+      {/* Notifications Menu - Shows user notifications */}
       <Menu
         anchorEl={notificationsMenuAnchor}
         open={Boolean(notificationsMenuAnchor)}
@@ -739,7 +787,7 @@ function Landing() {
             Notifications
           </Typography>
         </Box>
-        {/* Notifications content */}
+        {/* Notifications content would go here */}
         <Divider />
         <Box sx={{ p: 1, textAlign: 'center' }}>
           <Button size="small" sx={{ color: '#7b1fa2' }}>
@@ -748,7 +796,7 @@ function Landing() {
         </Box>
       </Menu>
 
-      {/* Delete Profile Dialog */}
+      {/* Delete Profile Confirmation Dialog */}
       <Dialog open={open} onClose={handleCloseDialog} sx={{ '& .MuiPaper-root': { borderRadius: 4 } }}>
         <DialogTitle>Confirm Deletion</DialogTitle>
         <DialogContent>
