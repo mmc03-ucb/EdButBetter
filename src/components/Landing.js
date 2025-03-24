@@ -40,7 +40,7 @@ import {
 } from '@mui/material';
 import { auth, db } from '../firebase/config';
 import { signOut, deleteUser, onAuthStateChanged } from 'firebase/auth';
-import { doc, deleteDoc, getDoc, collection, addDoc, serverTimestamp, query, where, getDocs } from 'firebase/firestore';
+import { doc, deleteDoc, getDoc } from 'firebase/firestore';
 import MenuBookIcon from '@mui/icons-material/MenuBook';
 import SchoolIcon from '@mui/icons-material/School';
 import ForumIcon from '@mui/icons-material/Forum';
@@ -67,8 +67,6 @@ import SettingsIcon from '@mui/icons-material/Settings';
 import StarIcon from '@mui/icons-material/Star';
 import NotificationsIcon from '@mui/icons-material/Notifications';
 import PeopleIcon from '@mui/icons-material/People';
-import UploadIcon from '@mui/icons-material/Upload';
-import Insights from './Insights';
 
 function Landing() {
   // State variables for managing UI interactions
@@ -78,9 +76,6 @@ function Landing() {
   const [userMenuAnchor, setUserMenuAnchor] = useState(null); // Anchor element for user dropdown menu
   const [notificationsMenuAnchor, setNotificationsMenuAnchor] = useState(null); // Anchor for notifications dropdown
   const [selectedSubsection, setSelectedSubsection] = useState('assignment1'); // Currently selected course subsection
-  const [uploading, setUploading] = useState(false); // Loading state for mock data upload
-  const [fetchedThreads, setFetchedThreads] = useState([]); // New state for fetched threads
-  const [showInsights, setShowInsights] = useState(false);
 
   const drawerWidth = 240; // Width of the left sidebar navigation drawer
 
@@ -111,29 +106,6 @@ function Landing() {
 
     return () => unsubscribe(); // Clean up auth listener when component unmounts
   }, []);
-
-  // Function to fetch threads from Firestore
-  const fetchThreads = async (subsection) => {
-    try {
-      const threadsCollection = collection(db, "threads");
-      const q = query(threadsCollection, where("subsection", "==", subsection));
-      const querySnapshot = await getDocs(q);
-      const threads = [];
-      querySnapshot.forEach((doc) => {
-        threads.push({ id: doc.id, ...doc.data() });
-      });
-      setFetchedThreads(threads);
-    } catch (err) {
-      console.error("Error fetching threads:", err);
-    }
-  };
-
-  // Update useEffect to fetch threads when subsection changes
-  useEffect(() => {
-    if (selectedSubsection === 'lab3') {
-      fetchThreads('lab3');
-    }
-  }, [selectedSubsection]);
 
   // Handler for user logout
   const handleLogout = async () => {
@@ -201,156 +173,6 @@ function Landing() {
   const handleThreadClick = (threadId) => {
     // Navigate to the thread detail page with the thread ID as URL parameter
     window.location.href = `/thread/${threadId}`;
-  };
-
-  // Function to upload mock TCP threads
-  const uploadMockTCPThreads = async () => {
-    setUploading(true);
-    try {
-      const threadsCollection = collection(db, "threads");
-
-      // Mock TCP threads data
-      const tcpThreads = [
-        {
-          title: "Important: Lab 3 Assignment Specification Update",
-          author: "Prof. Smith",
-          authorAvatar: "PS",
-          date: "1 day ago",
-          replies: 8,
-          views: 245,
-          category: "Announcements",
-          solved: true,
-          likes: 15,
-          preview: "I need to inform you about some important changes to the Lab 3 assignment specification:\n\n1. The TCP implementation now requires implementing both the sender and receiver sides, not just the sender as previously specified.\n2. The window size implementation has been updated to use a dynamic window size based on network conditions.\n3. The deadline has been extended by one week to accommodate these changes.\n\nPlease review the updated specification document in the course materials. If you have any questions about the changes, feel free to ask in the discussion forum.",
-          subsection: "lab3",
-          answers: [
-            {
-              author: "Prof. Smith",
-              authorAvatar: "PS",
-              content: "I'll be holding an extra office hour tomorrow at 2 PM to discuss these changes in detail. Please join if you have any questions about the updated requirements.",
-              likes: 12,
-              isTutor: true,
-              isAnswer: true,
-            },
-            {
-              author: "Student A",
-              authorAvatar: "SA",
-              content: "Thank you for the clarification. Will the lab resources be updated to reflect these changes as well?",
-              likes: 5,
-              isTutor: false,
-              isAnswer: false,
-            },
-          ],
-        },
-        {
-          title: "Understanding TCP Handshake Process",
-          author: "Prof. Smith",
-          authorAvatar: "PS",
-          date: "2 days ago",
-          replies: 12,
-          views: 156,
-          category: "Questions",
-          solved: true,
-          likes: 24,
-          preview: "Can someone explain the three-way handshake process in TCP? I'm having trouble understanding the sequence of SYN and ACK packets.",
-          subsection: "lab3",
-          answers: [
-            {
-              author: "Prof. Smith",
-              authorAvatar: "PS",
-              content: "The three-way handshake consists of three steps:\n1. Client sends SYN (sequence number = x)\n2. Server responds with SYN-ACK (sequence number = y, acknowledgment = x+1)\n3. Client sends ACK (acknowledgment = y+1)",
-              likes: 15,
-              isTutor: true,
-              isAnswer: true,
-            },
-            {
-              author: "Student A",
-              authorAvatar: "SA",
-              content: "I found this diagram helpful: [TCP Handshake Diagram]",
-              likes: 8,
-              isTutor: false,
-              isAnswer: false,
-            },
-          ],
-        },
-        {
-          title: "TCP vs UDP: When to use which?",
-          author: "Student B",
-          authorAvatar: "SB",
-          date: "1 day ago",
-          replies: 8,
-          views: 89,
-          category: "Questions",
-          solved: false,
-          likes: 12,
-          preview: "In what scenarios should we use TCP over UDP and vice versa? I'm working on the lab exercise and need to choose between them.",
-          subsection: "lab3",
-          answers: [
-            {
-              author: "Prof. Smith",
-              authorAvatar: "PS",
-              content: "TCP is best for reliable data transfer, ordered data delivery, flow control, and congestion control.\nUDP is better for real-time applications and when some packet loss is acceptable.",
-              likes: 20,
-              isTutor: true,
-              isAnswer: true,
-            },
-          ],
-        },
-        {
-          title: "TCP Window Size and Flow Control",
-          author: "Student C",
-          authorAvatar: "SC",
-          date: "3 days ago",
-          replies: 15,
-          views: 234,
-          category: "Questions",
-          solved: true,
-          likes: 18,
-          preview: "How does TCP window size affect flow control? I'm trying to implement this in the lab exercise.",
-          subsection: "lab3",
-          answers: [
-            {
-              author: "Prof. Smith",
-              authorAvatar: "PS",
-              content: "The window size determines how many bytes can be sent before receiving an acknowledgment. It helps prevent overwhelming the receiver and manages network congestion.",
-              likes: 25,
-              isTutor: true,
-              isAnswer: true,
-            },
-            {
-              author: "Student D",
-              authorAvatar: "SD",
-              content: "I implemented a sliding window algorithm in my lab. Here's the key part: [code snippet]",
-              likes: 10,
-              isTutor: false,
-              isAnswer: false,
-            },
-          ],
-        },
-      ];
-
-      // Upload each thread to Firestore
-      for (const thread of tcpThreads) {
-        await addDoc(threadsCollection, {
-          ...thread,
-          createdAt: serverTimestamp(),
-          updatedAt: serverTimestamp(),
-          answers: thread.answers.map(answer => ({
-            ...answer,
-            timestamp: new Date().toISOString(), // Using ISO string instead of serverTimestamp
-          })),
-        });
-      }
-
-      alert("Mock TCP threads uploaded successfully!");
-    } catch (err) {
-      console.error("Error uploading mock data:", err);
-      console.error("Error code:", err.code);
-      console.error("Error message:", err.message);
-      alert(`Error uploading mock data: ${err.message}`);
-    } finally {
-      setUploading(false);
-    }
   };
 
   // Logo component - Reusable branded header element
@@ -567,7 +389,8 @@ function Landing() {
   };
 
   // Get threads for the currently selected subsection
-  const currentThreads = selectedSubsection === 'lab3' ? fetchedThreads : (threadsBySubsection[selectedSubsection] || []);
+  // This filters the threads to show only those relevant to the selected section
+  const currentThreads = threadsBySubsection[selectedSubsection] || [];
 
   // Loading state - Show spinner while data is being fetched
   if (loading) {
@@ -789,180 +612,132 @@ function Landing() {
 
         {/* Thread List Area - Shows threads for the selected subsection */}
         <Box sx={{ flexGrow: 1, overflow: 'auto', p: 3, bgcolor: '#f8f9fa' }}>
-          {showInsights ? (
-            <Insights 
-              subsection={selectedSubsection} 
-              onBack={() => setShowInsights(false)} 
-            />
-          ) : (
-            <>
-              {/* Thread section header with new thread button */}
-              <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
-                <Typography variant="h6" fontWeight="medium">
-                  {courses[0].subsections.find(s => s.id === selectedSubsection)?.name || 'Discussions'}
-                </Typography>
-                <Box>
-                  {selectedSubsection === 'lab3' && (
-                    <>
-                      <Button 
-                        variant="outlined" 
-                        startIcon={<UploadIcon />}
-                        onClick={uploadMockTCPThreads}
-                        disabled={uploading}
-                        sx={{ 
-                          mr: 2,
-                          color: '#7b1fa2',
-                          borderColor: '#7b1fa2',
-                          '&:hover': {
-                            borderColor: '#7b1fa2',
-                            bgcolor: 'rgba(123, 31, 162, 0.08)'
-                          }
-                        }}
-                      >
-                        {uploading ? <CircularProgress size={24} /> : 'Upload Mock TCP Threads'}
-                      </Button>
-                      <Button
-                        variant="outlined"
-                        startIcon={<LightbulbIcon />}
-                        onClick={() => setShowInsights(true)}
-                        sx={{ 
-                          mr: 2,
-                          color: '#7b1fa2',
-                          borderColor: '#7b1fa2',
-                          '&:hover': {
-                            borderColor: '#7b1fa2',
-                            bgcolor: 'rgba(123, 31, 162, 0.08)'
-                          }
-                        }}
-                      >
-                        What's Happening?
-                      </Button>
-                    </>
-                  )}
-                  <Button 
-                    variant="contained" 
-                    startIcon={<ForumIcon />}
-                    sx={{ 
-                      bgcolor: '#7b1fa2',
-                      borderRadius: 6,
-                      px: 2,
-                      '&:hover': {
-                        bgcolor: '#6a1b9a'
-                      }
-                    }}
-                  >
-                    New Thread
-                  </Button>
-                </Box>
-              </Box>
-              
-              {/* Thread Cards - Each card shows a discussion thread and is clickable */}
-              {currentThreads.length > 0 ? (
-                currentThreads.map((thread) => (
-                  <Paper 
-                    key={thread.id} 
-                    elevation={0}
-                    onClick={() => handleThreadClick(thread.id)} // Click handler for navigation
-                    sx={{ 
-                      mb: 2, 
-                      border: '1px solid rgba(0, 0, 0, 0.08)',
-                      borderRadius: 2,
-                      overflow: 'hidden',
-                      transition: 'all 0.2s',
-                      cursor: 'pointer', // Cursor indicates clickable
-                      '&:hover': {
-                        borderColor: 'rgba(0, 0, 0, 0.15)',
-                        boxShadow: '0 1px 3px rgba(0,0,0,0.05)'
-                      }
-                    }}
-                  >
-                    <Box sx={{ display: 'flex', p: 2 }}>
-                      {/* Thread author avatar */}
-                      <Avatar sx={{ width: 40, height: 40, bgcolor: thread.id % 2 ? '#7b1fa2' : '#f0b952' }}>
-                        {thread.authorAvatar}
-                      </Avatar>
-                      
-                      {/* Thread content and metadata */}
-                      <Box sx={{ ml: 2, flexGrow: 1 }}>
-                        {/* Thread title with solved indicator if applicable */}
-                        <Box sx={{ display: 'flex', alignItems: 'center', mb: 0.5 }}>
-                          <Typography variant="subtitle1" fontWeight="medium">
-                            {thread.title}
-                          </Typography>
-                          {thread.solved && (
-                            <CheckCircleIcon 
-                              fontSize="small" 
-                              color="success" 
-                              sx={{ ml: 1 }}
-                            />
-                          )}
-                        </Box>
-                        
-                        {/* Thread preview/snippet */}
-                        <Typography variant="body2" color="text.secondary" sx={{ mb: 1, opacity: 0.85 }}>
-                          {thread.preview}
-                        </Typography>
-                        
-                        {/* Thread metadata (category, author, date, reply count, etc.) */}
-                        <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                          <Chip 
-                            label={thread.category} 
-                            size="small" 
-                            sx={{ 
-                              mr: 1.5, 
-                              bgcolor: thread.category === 'Questions' ? 'rgba(25, 118, 210, 0.1)' : 
-                                      thread.category === 'Announcements' ? 'rgba(240, 185, 82, 0.1)' :
-                                      thread.category === 'Resources' ? 'rgba(123, 31, 162, 0.1)' : 
-                                      'rgba(0, 0, 0, 0.06)',
-                              color: thread.category === 'Questions' ? 'primary.main' : 
-                                    thread.category === 'Announcements' ? '#d68f00' :
-                                    thread.category === 'Resources' ? '#7b1fa2' : 
-                                    'text.secondary',
-                              fontWeight: 'medium'
-                            }} 
-                          />
-                          <Typography variant="caption" color="text.secondary" sx={{ mr: 2 }}>
-                            by {thread.author} · {thread.date}
-                          </Typography>
-                          <Typography variant="caption" color="text.secondary" sx={{ display: 'flex', alignItems: 'center', mr: 1.5 }}>
-                            <QuestionAnswerIcon sx={{ fontSize: 14, mr: 0.5 }} /> {thread.replies}
-                          </Typography>
-                          <Typography variant="caption" color="text.secondary" sx={{ display: 'flex', alignItems: 'center', mr: 1.5 }}>
-                            <TrendingUpIcon sx={{ fontSize: 14, mr: 0.5 }} /> {thread.views}
-                          </Typography>
-                          <Typography variant="caption" color="text.secondary" sx={{ display: 'flex', alignItems: 'center' }}>
-                            <ThumbUpIcon sx={{ fontSize: 14, mr: 0.5 }} /> {thread.likes}
-                          </Typography>
-                        </Box>
-                      </Box>
+          {/* Thread section header with new thread button */}
+          <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
+            <Typography variant="h6" fontWeight="medium">
+              {courses[0].subsections.find(s => s.id === selectedSubsection)?.name || 'Discussions'}
+            </Typography>
+            <Button 
+              variant="contained" 
+              startIcon={<ForumIcon />}
+              sx={{ 
+                bgcolor: '#7b1fa2',
+                borderRadius: 6,
+                px: 2,
+                '&:hover': {
+                  bgcolor: '#6a1b9a'
+                }
+              }}
+            >
+              New Thread
+            </Button>
+          </Box>
+          
+          {/* Thread Cards - Each card shows a discussion thread and is clickable */}
+          {currentThreads.length > 0 ? (
+            currentThreads.map((thread) => (
+              <Paper 
+                key={thread.id} 
+                elevation={0}
+                onClick={() => handleThreadClick(thread.id)} // Click handler for navigation
+                sx={{ 
+                  mb: 2, 
+                  border: '1px solid rgba(0, 0, 0, 0.08)',
+                  borderRadius: 2,
+                  overflow: 'hidden',
+                  transition: 'all 0.2s',
+                  cursor: 'pointer', // Cursor indicates clickable
+                  '&:hover': {
+                    borderColor: 'rgba(0, 0, 0, 0.15)',
+                    boxShadow: '0 1px 3px rgba(0,0,0,0.05)'
+                  }
+                }}
+              >
+                <Box sx={{ display: 'flex', p: 2 }}>
+                  {/* Thread author avatar */}
+                  <Avatar sx={{ width: 40, height: 40, bgcolor: thread.id % 2 ? '#7b1fa2' : '#f0b952' }}>
+                    {thread.authorAvatar}
+                  </Avatar>
+                  
+                  {/* Thread content and metadata */}
+                  <Box sx={{ ml: 2, flexGrow: 1 }}>
+                    {/* Thread title with solved indicator if applicable */}
+                    <Box sx={{ display: 'flex', alignItems: 'center', mb: 0.5 }}>
+                      <Typography variant="subtitle1" fontWeight="medium">
+                        {thread.title}
+                      </Typography>
+                      {thread.solved && (
+                        <CheckCircleIcon 
+                          fontSize="small" 
+                          color="success" 
+                          sx={{ ml: 1 }}
+                        />
+                      )}
                     </Box>
-                  </Paper>
-                ))
-              ) : (
-                // Empty state when no threads are found
-                <Box sx={{ textAlign: 'center', py: 5 }}>
-                  <Typography variant="body1" color="text.secondary">
-                    No discussions found for this topic.
-                  </Typography>
-                  <Button 
-                    variant="outlined" 
-                    startIcon={<ForumIcon />}
-                    sx={{ 
-                      mt: 2,
-                      borderRadius: 6,
-                      color: '#7b1fa2',
-                      borderColor: '#7b1fa2',
-                      '&:hover': {
-                        borderColor: '#7b1fa2',
-                        bgcolor: 'rgba(123, 31, 162, 0.08)'
-                      }
-                    }}
-                  >
-                    Start a New Discussion
-                  </Button>
+                    
+                    {/* Thread preview/snippet */}
+                    <Typography variant="body2" color="text.secondary" sx={{ mb: 1, opacity: 0.85 }}>
+                      {thread.preview}
+                    </Typography>
+                    
+                    {/* Thread metadata (category, author, date, reply count, etc.) */}
+                    <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                      <Chip 
+                        label={thread.category} 
+                        size="small" 
+                        sx={{ 
+                          mr: 1.5, 
+                          bgcolor: thread.category === 'Questions' ? 'rgba(25, 118, 210, 0.1)' : 
+                                  thread.category === 'Announcements' ? 'rgba(240, 185, 82, 0.1)' :
+                                  thread.category === 'Resources' ? 'rgba(123, 31, 162, 0.1)' : 
+                                  'rgba(0, 0, 0, 0.06)',
+                          color: thread.category === 'Questions' ? 'primary.main' : 
+                                thread.category === 'Announcements' ? '#d68f00' :
+                                thread.category === 'Resources' ? '#7b1fa2' : 
+                                'text.secondary',
+                          fontWeight: 'medium'
+                        }} 
+                      />
+                      <Typography variant="caption" color="text.secondary" sx={{ mr: 2 }}>
+                        by {thread.author} · {thread.date}
+                      </Typography>
+                      <Typography variant="caption" color="text.secondary" sx={{ display: 'flex', alignItems: 'center', mr: 1.5 }}>
+                        <QuestionAnswerIcon sx={{ fontSize: 14, mr: 0.5 }} /> {thread.replies}
+                      </Typography>
+                      <Typography variant="caption" color="text.secondary" sx={{ display: 'flex', alignItems: 'center', mr: 1.5 }}>
+                        <TrendingUpIcon sx={{ fontSize: 14, mr: 0.5 }} /> {thread.views}
+                      </Typography>
+                      <Typography variant="caption" color="text.secondary" sx={{ display: 'flex', alignItems: 'center' }}>
+                        <ThumbUpIcon sx={{ fontSize: 14, mr: 0.5 }} /> {thread.likes}
+                      </Typography>
+                    </Box>
+                  </Box>
                 </Box>
-              )}
-            </>
+              </Paper>
+            ))
+          ) : (
+            // Empty state when no threads are found
+            <Box sx={{ textAlign: 'center', py: 5 }}>
+              <Typography variant="body1" color="text.secondary">
+                No discussions found for this topic.
+              </Typography>
+              <Button 
+                variant="outlined" 
+                startIcon={<ForumIcon />}
+                sx={{ 
+                  mt: 2,
+                  borderRadius: 6,
+                  color: '#7b1fa2',
+                  borderColor: '#7b1fa2',
+                  '&:hover': {
+                    borderColor: '#7b1fa2',
+                    bgcolor: 'rgba(123, 31, 162, 0.08)'
+                  }
+                }}
+              >
+                Start a New Discussion
+              </Button>
+            </Box>
           )}
         </Box>
       </Box>

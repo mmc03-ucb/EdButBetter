@@ -26,7 +26,7 @@ import {
 // Firebase imports for authentication and data fetching
 import { auth, db } from '../firebase/config';
 import { onAuthStateChanged } from 'firebase/auth';
-import { doc, getDoc, collection, query, where, getDocs } from 'firebase/firestore';
+import { doc, getDoc } from 'firebase/firestore';
 // Material UI icons
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
@@ -112,37 +112,26 @@ function ThreadDetail() {
     return () => unsubscribe();
   }, [threadId, navigate]); // Re-run if threadId or navigate changes
 
-  // Function to fetch thread details from Firestore
-  const fetchThreadDetails = async () => {
-    try {
-      // First, try to fetch from Firestore
-      const threadDoc = await getDoc(doc(db, "threads", threadId));
-      
-      if (threadDoc.exists()) {
-        const threadData = threadDoc.data();
-        setThread({
-          id: threadDoc.id,
-          ...threadData
-        });
-        setAnswers(threadData.answers || []);
-        setLoading(false);
-        return;
-      }
-
-      // If not found in Firestore, use mock data
-      // Mock thread data for Lab 3 React Router thread (ID: 9)
-      const mockThread = {
-        id: 9,
-        title: 'Lab 3 exercise on React Router is confusing',
-        author: 'Dana P.',
-        authorAvatar: 'D',
-        date: '3 days ago',
-        replies: 9,
-        views: 87,
-        category: 'Questions',
-        solved: false,
-        likes: 5,
-        content: `I'm having a lot of trouble with the Lab 3 exercise on React Router. The nested routes part is particularly confusing.
+  // Function to fetch thread details - currently uses mock data
+  // In a real app, this would make a Firestore query based on threadId
+  const fetchThreadDetails = () => {
+    // In a real app, you would fetch this from a database using threadId
+    // For now, we'll use mock data specifically for thread ID 9
+    
+    // Mock thread data for Lab 3 React Router thread (ID: 9)
+    // This includes the title, author, metadata, and content
+    const mockThread = {
+      id: 9,
+      title: 'Lab 3 exercise on React Router is confusing',
+      author: 'Dana P.',
+      authorAvatar: 'D',
+      date: '3 days ago',
+      replies: 9,
+      views: 87,
+      category: 'Questions',
+      solved: false,
+      likes: 5,
+      content: `I'm having a lot of trouble with the Lab 3 exercise on React Router. The nested routes part is particularly confusing.
 
 Here's what I'm trying to do:
 1. Set up a main route for my app
@@ -152,16 +141,17 @@ Here's what I'm trying to do:
 But I keep getting errors like "Cannot read property 'path' of undefined" and my routes aren't rendering correctly. Has anyone figured out the correct way to set up nested routes with React Router v6?
 
 I've looked at the documentation but it seems different from what was covered in the lecture. Any help would be appreciated!`,
-      };
+    };
 
-      // Mock answers specifically about React Router
-      const mockAnswers = [
-        {
-          id: 1,
-          author: 'Prof. Williams',
-          authorAvatar: 'PW',
-          date: '2 days ago',
-          content: `Great question, Dana. React Router v6 has some significant changes from v5 that might be causing confusion.
+    // Mock answers specifically about React Router
+    // Each answer includes author info, content with code examples, and voting data
+    const mockAnswers = [
+      {
+        id: 1,
+        author: 'Prof. Williams',
+        authorAvatar: 'PW',
+        date: '2 days ago',
+        content: `Great question, Dana. React Router v6 has some significant changes from v5 that might be causing confusion.
 
 For nested routes in React Router v6, you need to:
 
@@ -183,15 +173,16 @@ Here's a basic example:
 In your Layout component, use \`<Outlet />\` where you want the child routes to render.
 
 The most common mistake is forgetting the Outlet component. I'll post a complete example in the lab resources section later today.`,
-          isAnswer: true,
-          votes: 24
-        },
-        {
-          id: 2,
-          author: 'Gabrielle Steiner',
-          authorAvatar: 'G',
-          date: '2 days ago',
-          content: `I had the same issue! The key things that helped me:
+        isAnswer: true, // Marked as the accepted answer
+        votes: 24
+      },
+      // Additional answers with more React Router v6 solutions
+      {
+        id: 2,
+        author: 'Gabrielle Steiner',
+        authorAvatar: 'G',
+        date: '2 days ago',
+        content: `I had the same issue! The key things that helped me:
 
 1. Make sure you're using the correct imports:
 \`\`\`jsx
@@ -223,15 +214,16 @@ function UserProfile() {
 \`\`\`
 
 Hope this helps! Happy to share my working code if you're still stuck.`,
-          isAnswer: false,
-          votes: 18
-        },
-        {
-          id: 3,
-          author: 'Michael K.',
-          authorAvatar: 'M',
-          date: '2 days ago',
-          content: `Another thing to check is your Route paths. In React Router v6, you don't need to repeat the parent path in the child paths.
+        isAnswer: false,
+        votes: 18
+      },
+      // ... other answers
+      {
+        id: 3,
+        author: 'Michael K.',
+        authorAvatar: 'M',
+        date: '2 days ago',
+        content: `Another thing to check is your Route paths. In React Router v6, you don't need to repeat the parent path in the child paths.
 
 Wrong:
 \`\`\`jsx
@@ -256,18 +248,85 @@ Also, for index routes (the default child route), use the index prop:
 \`\`\`
 
 This was really tricky for me too!`,
-          isAnswer: false,
-          votes: 15
-        }
-      ];
+        isAnswer: false,
+        votes: 15
+      },
+      {
+        id: 4,
+        author: 'Taylor R.',
+        authorAvatar: 'T',
+        date: '1 day ago',
+        content: `For me, the "Cannot read property 'path' of undefined" error happened because I was trying to access history.push() which doesn't exist in React Router v6.
 
+In v6, you need to use the useNavigate hook instead:
+
+\`\`\`jsx
+import { useNavigate } from 'react-router-dom';
+
+function MyComponent() {
+  const navigate = useNavigate();
+  
+  const handleClick = () => {
+    navigate('/some-path');
+  };
+  
+  return <button onClick={handleClick}>Go to Path</button>;
+}
+\`\`\`
+
+Also, if you're using Route component in a loop, make sure each Route has a unique key.`,
+        isAnswer: false,
+        votes: 7
+      },
+      {
+        id: 5,
+        author: 'Zaryab Ayaz',
+        authorAvatar: 'Z',
+        date: '1 day ago',
+        content: `I recommend splitting your Router setup into smaller components. It makes the nested routes much easier to understand:
+
+\`\`\`jsx
+function App() {
+  return (
+    <BrowserRouter>
+      <Routes>
+        <Route path="/" element={<Layout />}>
+          <Route index element={<Home />} />
+          <Route path="dashboard/*" element={<Dashboard />} />
+          <Route path="profile/:id" element={<Profile />} />
+        </Route>
+      </Routes>
+    </BrowserRouter>
+  );
+}
+
+function Dashboard() {
+  return (
+    <div>
+      <h1>Dashboard</h1>
+      <nav>...</nav>
+      <Routes>
+        <Route index element={<DashboardHome />} />
+        <Route path="settings" element={<Settings />} />
+        <Route path="analytics" element={<Analytics />} />
+      </Routes>
+    </div>
+  );
+}
+\`\`\`
+
+The trick is using the /* at the end of the parent route path. This tells React Router that there are nested routes inside.`,
+        isAnswer: false,
+        votes: 12
+      }
+    ];
+
+    // Set thread and answers with a simulated network delay
+    setTimeout(() => {
       setThread(mockThread);
       setAnswers(mockAnswers);
       setLoading(false);
-    } catch (err) {
-      console.error("Error fetching thread details:", err);
-      setLoading(false);
-    }
+    }, 1000); // Simulate network delay
   };
 
   // Handler for submitting a new answer
@@ -377,7 +436,7 @@ This was really tricky for me too!`,
           {/* Thread content/body */}
           <Box sx={{ p: 3 }}>
             <Typography variant="body1" sx={{ whiteSpace: 'pre-line' }}>
-              {thread.preview || thread.content}
+              {thread.content}
             </Typography>
           </Box>
           <Divider />
@@ -442,8 +501,8 @@ This was really tricky for me too!`,
                     <Typography variant="subtitle1" fontWeight="medium">
                       {answer.author}
                     </Typography>
-                    {/* Show TUTOR badge for tutors */}
-                    {answer.isTutor && (
+                    {/* Show TUTOR badge for professor */}
+                    {answer.author === 'Prof. Williams' && (
                       <Chip 
                         label="TUTOR" 
                         size="small" 
