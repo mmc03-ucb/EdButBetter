@@ -1,3 +1,7 @@
+// Profile.js - User profile management component
+// This component handles displaying and editing user profile information
+// It includes tabs for courses, activity, and account settings
+
 import React, { useState, useEffect } from 'react';
 import { 
   Typography, 
@@ -24,9 +28,11 @@ import {
   Tab, 
   Tabs
 } from '@mui/material';
+// Firebase imports for authentication and database
 import { auth, db } from '../firebase/config';
 import { signOut, deleteUser, onAuthStateChanged } from 'firebase/auth';
 import { doc, getDoc, updateDoc, deleteDoc } from 'firebase/firestore';
+// Material UI icons
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import EditIcon from '@mui/icons-material/Edit';
 import SaveIcon from '@mui/icons-material/Save';
@@ -38,17 +44,20 @@ import ForumIcon from '@mui/icons-material/Forum';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 
 function Profile() {
-  const [name, setName] = useState('');
-  const [email, setEmail] = useState('');
-  const [loading, setLoading] = useState(true);
-  const [open, setOpen] = useState(false);
-  const [snackbarOpen, setSnackbarOpen] = useState(false);
-  const [snackbarMessage, setSnackbarMessage] = useState('');
-  const [snackbarSeverity, setSnackbarSeverity] = useState('success');
-  const [editing, setEditing] = useState(false);
-  const [tabValue, setTabValue] = useState(0);
+  // State variables for user data and UI control
+  const [name, setName] = useState(''); // User's display name
+  const [email, setEmail] = useState(''); // User's email address
+  const [loading, setLoading] = useState(true); // Controls loading indicator
+  const [open, setOpen] = useState(false); // Controls delete confirmation dialog
+  const [snackbarOpen, setSnackbarOpen] = useState(false); // Controls notification display
+  const [snackbarMessage, setSnackbarMessage] = useState(''); // Message for notifications
+  const [snackbarSeverity, setSnackbarSeverity] = useState('success'); // Type of notification (success, error, etc)
+  const [editing, setEditing] = useState(false); // Whether user is in edit mode
+  const [tabValue, setTabValue] = useState(0); // Currently selected tab index
 
+  // useEffect hook to fetch user data when component mounts
   useEffect(() => {
+    // Function to get user data from Firestore database
     const fetchUserData = async (user) => {
       try {
         const userDoc = await getDoc(doc(db, 'users', user.uid));
@@ -67,6 +76,8 @@ function Profile() {
       }
     };
 
+    // Firebase authentication state listener
+    // Redirects to login page if user is not authenticated
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       if (user) {
         fetchUserData(user);
@@ -75,10 +86,13 @@ function Profile() {
       }
     });
 
+    // Clean up subscription when component unmounts
     return () => unsubscribe();
   }, []);
 
+  // Handler for saving profile changes to Firestore
   const handleSave = async () => {
+    // Validate input fields before saving
     if (!name || !email) {
       setSnackbarMessage("Name and email cannot be empty.");
       setSnackbarSeverity("warning");
@@ -87,8 +101,11 @@ function Profile() {
     }
 
     try {
+      // Update user data in Firestore
       const user = auth.currentUser;
       await updateDoc(doc(db, 'users', user.uid), { name, email });
+      
+      // Show success message and exit edit mode
       setSnackbarMessage("Profile updated successfully!");
       setSnackbarSeverity("success");
       setSnackbarOpen(true);
@@ -101,12 +118,16 @@ function Profile() {
     }
   };
 
+  // Handler for deleting user account and associated data
   const handleDelete = async () => {
     try {
       const user = auth.currentUser;
+      // Delete user data from Firestore
       await deleteDoc(doc(db, 'users', user.uid));
       await deleteDoc(doc(db, 'user_data', user.uid));
+      // Delete user authentication account
       await deleteUser(user);
+      // Redirect to sign in page
       window.location.href = '/';
     } catch (err) {
       console.error("Error deleting profile:", err.message);
@@ -116,6 +137,7 @@ function Profile() {
     }
   };
 
+  // Handler for user logout
   const handleLogout = async () => {
     try {
       await signOut(auth);
@@ -128,7 +150,7 @@ function Profile() {
     }
   };
 
-  // Logo component in the style of the image
+  // Logo component - Reusable branded header element
   const Logo = () => (
     <Box display="flex" alignItems="center">
       <Box
@@ -159,29 +181,33 @@ function Profile() {
     </Box>
   );
 
+  // Handler for tab selection changes
   const handleTabChange = (event, newValue) => {
     setTabValue(newValue);
   };
 
+  // Dialog and UI control handlers
   const handleOpenDialog = () => setOpen(true);
   const handleCloseDialog = () => setOpen(false);
   const handleConfirmDelete = async () => { await handleDelete(); handleCloseDialog(); };
   const handleSnackbarClose = () => setSnackbarOpen(false);
   const toggleEditing = () => setEditing(!editing);
 
-  // Mock data for tabs
+  // Mock data for the courses tab - In a real app, this would come from database
   const enrolledCourses = [
     { id: 1, title: 'Introduction to Machine Learning', progress: 65 },
     { id: 2, title: 'Web Development Fundamentals', progress: 90 },
     { id: 3, title: 'Data Structures and Algorithms', progress: 30 }
   ];
 
+  // Mock data for the activity tab - In a real app, this would come from database
   const recentActivity = [
     { id: 1, type: 'post', title: 'How to optimize neural networks?', date: '2 days ago' },
     { id: 2, type: 'reply', title: 'Re: Best books for beginners', date: '4 days ago' },
     { id: 3, type: 'course', title: 'Completed "JavaScript Basics" module', date: '1 week ago' }
   ];
 
+  // Show loading spinner while data is being fetched
   if (loading) {
     return (
       <Box display="flex" justifyContent="center" alignItems="center" height="100vh">
@@ -191,9 +217,10 @@ function Profile() {
     );
   }
 
+  // Main component render
   return (
     <Box sx={{ bgcolor: '#f5f0fa', minHeight: '100vh' }}>
-      {/* Navigation Bar */}
+      {/* Top Navigation Bar - Contains back button, logo and logout button */}
       <AppBar position="static" sx={{ bgcolor: 'white', color: 'text.primary', boxShadow: '0 2px 10px rgba(0,0,0,0.05)' }}>
         <Toolbar>
           <IconButton 
@@ -227,9 +254,10 @@ function Profile() {
         </Toolbar>
       </AppBar>
 
+      {/* Main Content Area - Grid layout with profile card and tabbed content */}
       <Container maxWidth="lg" sx={{ mt: 5, mb: 8 }}>
         <Grid container spacing={4}>
-          {/* Profile Summary Card */}
+          {/* Left Side: Profile Summary Card - Shows user info and edit controls */}
           <Grid item xs={12} md={4}>
             <Card sx={{ 
               borderRadius: 4, 
@@ -237,6 +265,7 @@ function Profile() {
               boxShadow: '0 6px 18px rgba(0,0,0,0.08)',
               height: '100%'
             }}>
+              {/* Purple header banner */}
               <Box sx={{ 
                 bgcolor: '#7b1fa2', 
                 height: 100, 
@@ -244,6 +273,7 @@ function Profile() {
                 position: 'relative' 
               }} />
               
+              {/* Profile avatar and user information */}
               <Box sx={{ 
                 display: 'flex', 
                 flexDirection: 'column', 
@@ -265,7 +295,9 @@ function Profile() {
                 </Avatar>
                 
                 <Box sx={{ p: 3, width: '100%', textAlign: 'center' }}>
+                  {/* Show either edit form or profile information based on editing state */}
                   {editing ? (
+                    // Edit mode - Show form fields
                     <>
                       <TextField 
                         fullWidth 
@@ -305,6 +337,7 @@ function Profile() {
                       />
                     </>
                   ) : (
+                    // View mode - Show user information
                     <>
                       <Typography variant="h5" fontWeight="bold" gutterBottom>
                         {name}
@@ -312,6 +345,7 @@ function Profile() {
                       <Typography variant="body1" color="text.secondary" gutterBottom>
                         {email}
                       </Typography>
+                      {/* User badges/tags */}
                       <Box 
                         sx={{ 
                           display: 'flex', 
@@ -358,8 +392,10 @@ function Profile() {
                   
                   <Divider sx={{ my: 2 }} />
                   
+                  {/* Profile action buttons - Edit/Save and Delete */}
                   <Box sx={{ mt: 2, display: 'flex', justifyContent: 'center', gap: 2 }}>
                     {editing ? (
+                      // Show Save button when in edit mode
                       <Button 
                         variant="contained" 
                         startIcon={<SaveIcon />}
@@ -375,6 +411,7 @@ function Profile() {
                         Save Changes
                       </Button>
                     ) : (
+                      // Show Edit button when in view mode
                       <Button 
                         variant="outlined" 
                         startIcon={<EditIcon />}
@@ -409,13 +446,14 @@ function Profile() {
             </Card>
           </Grid>
           
-          {/* Right Side: Activity and Course Info */}
+          {/* Right Side: Tabbed Content Area - Courses, Activity, Account tabs */}
           <Grid item xs={12} md={8}>
             <Card sx={{ 
               borderRadius: 4, 
               overflow: 'hidden', 
               boxShadow: '0 6px 18px rgba(0,0,0,0.08)'
             }}>
+              {/* Tab Navigation */}
               <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
                 <Tabs 
                   value={tabValue} 
@@ -440,13 +478,14 @@ function Profile() {
                 </Tabs>
               </Box>
               
-              {/* Courses Tab */}
+              {/* Courses Tab Content - Shows enrolled courses and progress */}
               {tabValue === 0 && (
                 <CardContent>
                   <Typography variant="h6" fontWeight="bold" gutterBottom>
                     Enrolled Courses
                   </Typography>
                   
+                  {/* Course list with progress bars */}
                   {enrolledCourses.map((course) => (
                     <Card 
                       key={course.id} 
@@ -481,6 +520,7 @@ function Profile() {
                             Continue
                           </Button>
                         </Box>
+                        {/* Progress bar */}
                         <Box 
                           sx={{ 
                             mt: 2, 
@@ -502,6 +542,7 @@ function Profile() {
                     </Card>
                   ))}
                   
+                  {/* Browse more courses button */}
                   <Box sx={{ mt: 3, textAlign: 'center' }}>
                     <Button 
                       variant="outlined"
@@ -521,13 +562,14 @@ function Profile() {
                 </CardContent>
               )}
               
-              {/* Activity Tab */}
+              {/* Activity Tab Content - Shows recent user activity */}
               {tabValue === 1 && (
                 <CardContent>
                   <Typography variant="h6" fontWeight="bold" gutterBottom>
                     Recent Activity
                   </Typography>
                   
+                  {/* Activity list */}
                   {recentActivity.map((activity) => (
                     <Box 
                       key={activity.id} 
@@ -555,13 +597,14 @@ function Profile() {
                 </CardContent>
               )}
               
-              {/* Account Tab */}
+              {/* Account Tab Content - Account settings form */}
               {tabValue === 2 && (
                 <CardContent>
                   <Typography variant="h6" fontWeight="bold" gutterBottom>
                     Account Settings
                   </Typography>
                   
+                  {/* Account settings form */}
                   <Grid container spacing={2}>
                     <Grid item xs={12}>
                       <TextField 
@@ -639,6 +682,7 @@ function Profile() {
                   
                   <Divider sx={{ my: 4 }} />
                   
+                  {/* Danger Zone - Account deletion section */}
                   <Typography variant="h6" color="error" sx={{ mb: 2 }}>
                     Danger Zone
                   </Typography>
@@ -661,6 +705,7 @@ function Profile() {
         </Grid>
       </Container>
 
+      {/* Delete Profile Confirmation Dialog */}
       <Dialog 
         open={open} 
         onClose={handleCloseDialog}
@@ -678,6 +723,7 @@ function Profile() {
         </DialogActions>
       </Dialog>
 
+      {/* Notification Snackbar for displaying success/error messages */}
       <Snackbar 
         open={snackbarOpen} 
         autoHideDuration={3000} 
