@@ -26,7 +26,7 @@ import {
 // Firebase imports for authentication and data fetching
 import { auth, db } from '../firebase/config';
 import { onAuthStateChanged } from 'firebase/auth';
-import { doc, getDoc, collection, query, where, getDocs } from 'firebase/firestore';
+import { doc, getDoc, updateDoc } from 'firebase/firestore';
 // Material UI icons
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
@@ -36,6 +36,50 @@ import SendIcon from '@mui/icons-material/Send';
 import BookmarkIcon from '@mui/icons-material/Bookmark';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import Logo from './Logo';
+
+// Styles
+const styles = {
+  appBar: { bgcolor: 'white', color: 'text.primary', boxShadow: '0 2px 10px rgba(0,0,0,0.05)' },
+  threadCard: {
+    mb: 4,
+    border: '1px solid rgba(0, 0, 0, 0.08)',
+    borderRadius: 2,
+    overflow: 'hidden',
+    boxShadow: '0 2px 8px rgba(0,0,0,0.05)'
+  },
+  threadHeader: {
+    bgcolor: '#f8f8f8',
+    px: 3,
+    py: 2,
+    display: 'flex',
+    alignItems: 'center'
+  },
+  answerCard: {
+    mb: 3,
+    borderRadius: 2,
+    boxShadow: '0 2px 8px rgba(0,0,0,0.05)'
+  },
+  acceptedAnswer: {
+    border: '2px solid #4caf50',
+    boxShadow: '0 2px 12px rgba(76, 175, 80, 0.15)'
+  },
+  tutorChip: {
+    ml: 1,
+    bgcolor: '#f0b952',
+    color: 'white',
+    fontWeight: 'bold',
+    fontSize: '0.7rem',
+    height: 20
+  },
+  submitButton: {
+    bgcolor: '#7b1fa2',
+    borderRadius: 6,
+    px: 3,
+    '&:hover': {
+      bgcolor: '#6a1b9a'
+    }
+  }
+};
 
 function ThreadDetail() {
   // Extract the threadId from URL parameters (/thread/:threadId)
@@ -64,6 +108,26 @@ function ThreadDetail() {
       }
     };
 
+    // Function to fetch thread details from Firestore
+    const fetchThreadDetails = async () => {
+      try {
+        const threadDoc = await getDoc(doc(db, "threads", threadId));
+        
+        if (threadDoc.exists()) {
+          const threadData = threadDoc.data();
+          setThread({
+            id: threadDoc.id,
+            ...threadData
+          });
+          setAnswers(threadData.answers || []);
+        }
+      } catch (err) {
+        console.error("Error fetching thread details:", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
     // Firebase auth state listener
     // Redirects to login page if not authenticated
     const unsubscribe = onAuthStateChanged(auth, (user) => {
@@ -75,190 +139,38 @@ function ThreadDetail() {
       }
     });
 
-    // Load thread data (currently using mock data)
+    // Load thread data
     fetchThreadDetails();
 
     // Cleanup the auth listener on component unmount
     return () => unsubscribe();
-  }, [threadId, navigate]); // Re-run if threadId or navigate changes
-
-  // Function to fetch thread details from Firestore
-  const fetchThreadDetails = async () => {
-    try {
-      // First, try to fetch from Firestore
-      const threadDoc = await getDoc(doc(db, "threads", threadId));
-      
-      if (threadDoc.exists()) {
-        const threadData = threadDoc.data();
-        setThread({
-          id: threadDoc.id,
-          ...threadData
-        });
-        setAnswers(threadData.answers || []);
-        setLoading(false);
-        return;
-      }
-
-      // If not found in Firestore, use mock data
-      // Mock thread data for Lab 3 React Router thread (ID: 9)
-      const mockThread = {
-        id: 9,
-        title: 'Lab 3 exercise on React Router is confusing',
-        author: 'Dana P.',
-        authorAvatar: 'D',
-        date: '3 days ago',
-        replies: 9,
-        views: 87,
-        category: 'Questions',
-        solved: false,
-        likes: 5,
-        content: `I'm having a lot of trouble with the Lab 3 exercise on React Router. The nested routes part is particularly confusing.
-
-Here's what I'm trying to do:
-1. Set up a main route for my app
-2. Create nested routes for different sections
-3. Implement URL parameters for dynamic content
-
-But I keep getting errors like "Cannot read property 'path' of undefined" and my routes aren't rendering correctly. Has anyone figured out the correct way to set up nested routes with React Router v6?
-
-I've looked at the documentation but it seems different from what was covered in the lecture. Any help would be appreciated!`,
-      };
-
-      // Mock answers specifically about React Router
-      const mockAnswers = [
-        {
-          id: 1,
-          author: 'Prof. Williams',
-          authorAvatar: 'PW',
-          date: '2 days ago',
-          content: `Great question, Dana. React Router v6 has some significant changes from v5 that might be causing confusion.
-
-For nested routes in React Router v6, you need to:
-
-1. Use the Outlet component from react-router-dom
-2. Define child routes inside the parent route
-
-Here's a basic example:
-
-\`\`\`jsx
-<Routes>
-  <Route path="/" element={<Layout />}>
-    <Route index element={<Home />} />
-    <Route path="about" element={<About />} />
-    <Route path="users/:userId" element={<UserProfile />} />
-  </Route>
-</Routes>
-\`\`\`
-
-In your Layout component, use \`<Outlet />\` where you want the child routes to render.
-
-The most common mistake is forgetting the Outlet component. I'll post a complete example in the lab resources section later today.`,
-          isAnswer: true,
-          votes: 24
-        },
-        {
-          id: 2,
-          author: 'Gabrielle Steiner',
-          authorAvatar: 'G',
-          date: '2 days ago',
-          content: `I had the same issue! The key things that helped me:
-
-1. Make sure you're using the correct imports:
-\`\`\`jsx
-import { BrowserRouter, Routes, Route, Outlet, Link, useParams } from 'react-router-dom';
-\`\`\`
-
-2. For nested routes, your parent component needs to render an Outlet:
-\`\`\`jsx
-function Dashboard() {
-  return (
-    <div>
-      <h1>Dashboard</h1>
-      <nav>
-        <Link to="stats">Stats</Link>
-        <Link to="settings">Settings</Link>
-      </nav>
-      <Outlet /> // This is where your nested routes appear
-    </div>
-  );
-}
-\`\`\`
-
-3. URL params are accessed with the useParams hook:
-\`\`\`jsx
-function UserProfile() {
-  const { userId } = useParams();
-  return <h2>User: {userId}</h2>;
-}
-\`\`\`
-
-Hope this helps! Happy to share my working code if you're still stuck.`,
-          isAnswer: false,
-          votes: 18
-        },
-        {
-          id: 3,
-          author: 'Michael K.',
-          authorAvatar: 'M',
-          date: '2 days ago',
-          content: `Another thing to check is your Route paths. In React Router v6, you don't need to repeat the parent path in the child paths.
-
-Wrong:
-\`\`\`jsx
-<Route path="/dashboard" element={<Dashboard />}>
-  <Route path="/dashboard/stats" element={<Stats />} />
-</Route>
-\`\`\`
-
-Correct:
-\`\`\`jsx
-<Route path="/dashboard" element={<Dashboard />}>
-  <Route path="stats" element={<Stats />} />
-</Route>
-\`\`\`
-
-Also, for index routes (the default child route), use the index prop:
-\`\`\`jsx
-<Route path="/dashboard" element={<Dashboard />}>
-  <Route index element={<Overview />} />
-  <Route path="stats" element={<Stats />} />
-</Route>
-\`\`\`
-
-This was really tricky for me too!`,
-          isAnswer: false,
-          votes: 15
-        }
-      ];
-
-      setThread(mockThread);
-      setAnswers(mockAnswers);
-      setLoading(false);
-    } catch (err) {
-      console.error("Error fetching thread details:", err);
-      setLoading(false);
-    }
-  };
+  }, [threadId, navigate]); // Removed fetchThreadDetails from dependencies since it's now inside useEffect
 
   // Handler for submitting a new answer
-  const handleSubmitAnswer = () => {
-    if (!newAnswer.trim()) return; // Don't submit empty answers
+  const handleSubmitAnswer = async () => {
+    if (!newAnswer.trim()) return;
     
-    // In a real app, you would save this answer to the database
-    // Create a new answer object with the current user's data
-    const newAnswerObj = {
-      id: answers.length + 1,
-      author: userName,
-      authorAvatar: userName.charAt(0).toUpperCase(),
-      date: 'Just now',
-      content: newAnswer,
-      isAnswer: false,
-      votes: 0
-    };
-    
-    // Add the new answer to the list and clear the input
-    setAnswers([...answers, newAnswerObj]);
-    setNewAnswer('');
+    try {
+      const newAnswerObj = {
+        id: answers.length + 1,
+        author: userName,
+        authorAvatar: userName.charAt(0).toUpperCase(),
+        date: 'Just now',
+        content: newAnswer,
+        isAnswer: false,
+        votes: 0
+      };
+      
+      // Update Firestore with new answer
+      await updateDoc(doc(db, "threads", threadId), {
+        answers: [...answers, newAnswerObj]
+      });
+      
+      setAnswers([...answers, newAnswerObj]);
+      setNewAnswer('');
+    } catch (err) {
+      console.error("Error submitting answer:", err);
+    }
   };
 
   // Show loading spinner while data is being fetched
@@ -275,7 +187,7 @@ This was really tricky for me too!`,
   return (
     <Box sx={{ bgcolor: '#f5f0fa', minHeight: '100vh' }}>
       {/* Navigation Bar - Contains back button, logo, and profile link */}
-      <AppBar position="static" sx={{ bgcolor: 'white', color: 'text.primary', boxShadow: '0 2px 10px rgba(0,0,0,0.05)' }}>
+      <AppBar position="static" sx={styles.appBar}>
         <Toolbar>
           <IconButton 
             edge="start" 
@@ -292,10 +204,7 @@ This was really tricky for me too!`,
             variant="text"
             startIcon={<AccountCircleIcon />}
             onClick={() => navigate('/profile')}
-            sx={{ 
-              color: '#7b1fa2',
-              fontWeight: 'medium'
-            }}
+            sx={{ color: '#7b1fa2', fontWeight: 'medium' }}
           >
             {userName}
           </Button>
@@ -306,37 +215,31 @@ This was really tricky for me too!`,
         {/* Thread Question Card - Shows the original question with details */}
         <Paper 
           elevation={0}
-          sx={{ 
-            mb: 4, 
-            border: '1px solid rgba(0, 0, 0, 0.08)',
-            borderRadius: 2,
-            overflow: 'hidden',
-            boxShadow: '0 2px 8px rgba(0,0,0,0.05)'
-          }}
+          sx={styles.threadCard}
         >
           {/* Thread header with author info and category */}
-          <Box sx={{ bgcolor: '#f8f8f8', px: 3, py: 2, display: 'flex', alignItems: 'center' }}>
+          <Box sx={styles.threadHeader}>
             <Avatar sx={{ width: 48, height: 48, bgcolor: '#7b1fa2', mr: 2 }}>
-              {thread.authorAvatar}
+              {thread?.authorAvatar}
             </Avatar>
             <Box>
               <Typography variant="h6" fontWeight="medium">
-                {thread.title}
+                {thread?.title}
               </Typography>
               <Typography variant="body2" color="text.secondary">
-                Asked by {thread.author} • {thread.date}
+                Asked by {thread?.author} • {thread?.date}
               </Typography>
             </Box>
             <Box sx={{ flexGrow: 1 }} />
             <Chip 
-              label={thread.category} 
+              label={thread?.category} 
               size="medium" 
               sx={{ 
-                bgcolor: thread.category === 'Questions' ? 'rgba(25, 118, 210, 0.1)' : 
-                  thread.category === 'Announcements' ? 'rgba(240, 185, 82, 0.1)' :
+                bgcolor: thread?.category === 'Questions' ? 'rgba(25, 118, 210, 0.1)' : 
+                  thread?.category === 'Announcements' ? 'rgba(240, 185, 82, 0.1)' :
                   'rgba(0, 0, 0, 0.06)',
-                color: thread.category === 'Questions' ? 'primary.main' : 
-                  thread.category === 'Announcements' ? '#d68f00' : 
+                color: thread?.category === 'Questions' ? 'primary.main' : 
+                  thread?.category === 'Announcements' ? '#d68f00' : 
                   'text.secondary',
                 fontWeight: 'medium',
                 px: 1
@@ -347,7 +250,7 @@ This was really tricky for me too!`,
           {/* Thread content/body */}
           <Box sx={{ p: 3 }}>
             <Typography variant="body1" sx={{ whiteSpace: 'pre-line' }}>
-              {thread.preview || thread.content}
+              {thread?.content}
             </Typography>
           </Box>
           <Divider />
@@ -358,7 +261,7 @@ This was really tricky for me too!`,
               size="small"
               sx={{ mr: 1, color: 'text.secondary' }}
             >
-              Upvote ({thread.likes})
+              Upvote ({thread?.likes || 0})
             </Button>
             <Button 
               startIcon={<BookmarkIcon />} 
@@ -369,7 +272,7 @@ This was really tricky for me too!`,
             </Button>
             <Box sx={{ flexGrow: 1 }} />
             <Typography variant="body2" color="text.secondary">
-              {thread.views} views • {thread.replies} answers
+              {thread?.views || 0} views • {answers.length} answers
             </Typography>
           </Box>
         </Paper>
@@ -393,13 +296,7 @@ This was really tricky for me too!`,
           <Card 
             key={answer.id} 
             elevation={0}
-            sx={{ 
-              mb: 3, 
-              // Special styling for accepted answers (green border)
-              border: answer.isAnswer ? '2px solid #4caf50' : '1px solid rgba(0, 0, 0, 0.08)',
-              borderRadius: 2,
-              boxShadow: answer.isAnswer ? '0 2px 12px rgba(76, 175, 80, 0.15)' : '0 2px 8px rgba(0,0,0,0.05)'
-            }}
+            sx={{ ...styles.answerCard, ...(answer.isAnswer ? styles.acceptedAnswer : {}) }}
           >
             <CardContent>
               {/* Answer author information */}
@@ -417,14 +314,7 @@ This was really tricky for me too!`,
                       <Chip 
                         label="TUTOR" 
                         size="small" 
-                        sx={{ 
-                          ml: 1,
-                          bgcolor: '#f0b952',
-                          color: 'white',
-                          fontWeight: 'bold',
-                          fontSize: '0.7rem',
-                          height: 20
-                        }} 
+                        sx={styles.tutorChip} 
                       />
                     )}
                     {/* Show "Accepted Answer" badge if isAnswer is true */}
@@ -492,14 +382,7 @@ This was really tricky for me too!`,
             variant="contained" 
             endIcon={<SendIcon />}
             onClick={handleSubmitAnswer}
-            sx={{ 
-              bgcolor: '#7b1fa2',
-              borderRadius: 6,
-              px: 3,
-              '&:hover': {
-                bgcolor: '#6a1b9a'
-              }
-            }}
+            sx={styles.submitButton}
           >
             Post Your Answer
           </Button>
