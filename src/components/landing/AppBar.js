@@ -27,7 +27,8 @@ import {
   AccountCircle as AccountCircleIcon,
   Settings as SettingsIcon,
   Logout as LogoutIcon,
-  Delete as DeleteIcon
+  Delete as DeleteIcon,
+  SmartToy as SmartToyIcon
 } from '@mui/icons-material';
 import { auth, db } from '../../firebase/config';
 import { signOut, deleteUser } from 'firebase/auth';
@@ -117,6 +118,27 @@ function AppBar({ userName }) {
             }}
           />
         </Paper>
+        
+        <Tooltip title="AI Assistant">
+          <Button
+            startIcon={<SmartToyIcon />}
+            variant="outlined"
+            size="small"
+            onClick={() => { window.location.href = '/ai-qa'; }}
+            sx={{
+              borderRadius: 2,
+              mr: 1,
+              borderColor: '#7b1fa2',
+              color: '#7b1fa2',
+              '&:hover': {
+                borderColor: '#6a1b9a',
+                bgcolor: 'rgba(123, 31, 162, 0.04)'
+              }
+            }}
+          >
+            AI Assistant
+          </Button>
+        </Tooltip>
         
         <Tooltip title="Notifications">
           <IconButton 

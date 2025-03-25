@@ -70,6 +70,52 @@ Use proper markdown formatting for headers, lists, and emphasis.`;
   }
 });
 
+// API endpoint for AI Q/A
+app.post('/api/ai-qa', async (req, res) => {
+  try {
+    const { query, threads } = req.body;
+
+    if (!query || !threads || !Array.isArray(threads)) {
+      return res.status(400).json({ error: 'Invalid request data' });
+    }
+
+    const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash-lite" });
+
+    // Format the prompt for Gemini
+    const prompt = `You are a helpful AI tutor for a discussion forum about computer science and programming. 
+Answer the following question using ONLY the information available in the provided threads.
+If the answer cannot be found in the threads, explicitly state "I don't have enough information to answer that question. Please ask in the thread."
+
+User question: ${query}
+
+Threads data:
+${JSON.stringify(threads, null, 2)}
+Explain your answer so that it is easy to understand. Be thorough and detailed.
+Format your response in a conversational way. Use markdown formatting where appropriate for code snippets, lists, or emphasis.
+When referencing a thread, mention it as follows: "According to [Thread Title]" or "As mentioned in [Thread Title]" Hyperlink [Thread Title]`;
+
+    const result = await model.generateContent(prompt);
+    const response = await result.response;
+    const text = response.text();
+
+    // Process the text to create links to threads - match [Thread Title] pattern
+    const processedText = text.replace(/\[(.*?)\]/g, (match, title) => {
+      const thread = threads.find(t => t.title.toLowerCase() === title.toLowerCase());
+      if (thread) {
+        return `[${title}](thread/${thread.id})`;
+      }
+      return match;
+    });
+
+    return res.status(200).json({ 
+      answer: processedText
+    });
+  } catch (error) {
+    console.error('Error processing AI Q/A request:', error);
+    return res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
 app.listen(port, () => {
   console.log(`Server running on port ${port}`);
 }); 

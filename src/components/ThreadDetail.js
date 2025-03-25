@@ -35,6 +35,7 @@ import ThumbDownIcon from '@mui/icons-material/ThumbDown';
 import SendIcon from '@mui/icons-material/Send';
 import BookmarkIcon from '@mui/icons-material/Bookmark';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
+import SmartToyIcon from '@mui/icons-material/SmartToy';
 import Logo from './Logo';
 // Import mockThreads for non-lab3 content
 import { mockThreads } from '../data/mockData';
@@ -282,6 +283,23 @@ function ThreadDetail() {
           </IconButton>
           <Logo size="small" />
           <Box sx={{ flexGrow: 1 }} />
+          <Button
+            variant="outlined"
+            startIcon={<SmartToyIcon />}
+            onClick={() => navigate('/ai-qa')}
+            sx={{
+              borderRadius: 2,
+              borderColor: '#7b1fa2',
+              color: '#7b1fa2',
+              mr: 2,
+              '&:hover': {
+                borderColor: '#6a1b9a',
+                bgcolor: 'rgba(123, 31, 162, 0.04)'
+              }
+            }}
+          >
+            AI Assistant
+          </Button>
           <Button 
             variant="text"
             startIcon={<AccountCircleIcon />}

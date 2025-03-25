@@ -12,6 +12,7 @@ import SignInSignUp from './components/SignInSignUp';
 import Landing from './components/Landing';
 import Profile from './components/Profile';
 import ThreadDetail from './components/ThreadDetail';
+import AIQandA from './components/AIQandA';
 // Import cache context provider
 import { CacheProvider } from './context/CacheContext';
 
@@ -85,6 +86,8 @@ function App() {
             <Route path="/profile" element={<Profile />} />
             {/* Thread detail page with dynamic threadId parameter */}
             <Route path="/thread/:threadId" element={<ThreadDetail />} />
+            {/* AI Q/A page */}
+            <Route path="/ai-qa" element={<AIQandA />} />
           </Routes>
         </Router>
       </CacheProvider>
