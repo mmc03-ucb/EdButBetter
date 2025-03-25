@@ -21,8 +21,8 @@ import { CacheProvider } from './context/CacheContext';
 const theme = createTheme({
   palette: {
     primary: {
-      main: '#5FE3D3', // Turquoise color from the logo
-      dark: '#4CC5B7', // Darker shade for hover states
+      main: '#7b1fa2', // Purple color used throughout the app
+      dark: '#6a1b9a', // Darker shade for hover states
     },
     secondary: {
       main: '#f0b952', // Keep the amber accent color

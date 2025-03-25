@@ -226,7 +226,7 @@ function AIQandA() {
           }}>
             <Avatar 
               sx={{ 
-                bgcolor: '#5FE3D3',
+                bgcolor: '#7b1fa2',
                 mr: 2 
               }}
             >
@@ -261,7 +261,7 @@ function AIQandA() {
               >
                 <Avatar 
                   sx={{ 
-                    bgcolor: message.role === 'user' ? '#7b1fa2' : '#5FE3D3',
+                    bgcolor: message.role === 'user' ? '#7b1fa2' : '#7b1fa2',
                     mt: 0.5,
                     mr: message.role === 'user' ? 0 : 2,
                     ml: message.role === 'user' ? 2 : 0
@@ -347,7 +347,7 @@ function AIQandA() {
               <Box display="flex" my={3}>
                 <Avatar 
                   sx={{ 
-                    bgcolor: '#5FE3D3',
+                    bgcolor: '#7b1fa2',
                     mr: 2,
                     mt: 0.5
                   }}

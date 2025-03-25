@@ -1,7 +1,8 @@
 import React from 'react';
 import { Box, Typography } from '@mui/material';
+import logoImage from '../assets/logo.png'; // Import the logo image
 
-function Logo({ size = 'medium' }) {
+function Logo({ size = 'medium', showText = true }) {
   // Size variants for the logo
   const sizes = {
     small: {
@@ -15,8 +16,8 @@ function Logo({ size = 'medium' }) {
       fontSize: '1.25rem',
     },
     large: {
-      width: 50,
-      height: 50,
+      width: 60,
+      height: 60,
       fontSize: '1.5rem',
     }
   };
@@ -25,59 +26,32 @@ function Logo({ size = 'medium' }) {
 
   return (
     <Box display="flex" alignItems="center">
-      {/* Chat bubble logo */}
+      {/* Logo image */}
       <Box
-        component="div"
+        component="img"
+        src={logoImage}
+        alt="EduChat Logo"
         sx={{
           width: selectedSize.width,
           height: selectedSize.height,
-          position: 'relative',
-          mr: 1,
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          bgcolor: '#5FE3D3',
-          borderRadius: '12px',
-          transform: 'rotate(-5deg)',
-          '&::before': {
-            content: '""',
-            position: 'absolute',
-            bottom: -4,
-            right: -4,
-            width: 8,
-            height: 8,
-            bgcolor: '#5FE3D3',
-            borderRadius: '50%'
-          }
+          objectFit: 'contain',
+          mr: showText ? 1 : 0
         }}
-      >
-        {/* Three dots inside chat bubble */}
-        <Box sx={{ display: 'flex', gap: 0.5, transform: 'translateY(-2px)' }}>
-          {[...Array(3)].map((_, i) => (
-            <Box
-              key={i}
-              sx={{
-                width: selectedSize.width * 0.15,
-                height: selectedSize.width * 0.15,
-                bgcolor: 'white',
-                borderRadius: '50%'
-              }}
-            />
-          ))}
-        </Box>
-      </Box>
+      />
       
-      {/* Brand name */}
-      <Typography 
-        variant={size === 'large' ? 'h4' : 'h6'} 
-        sx={{
-          fontWeight: 'bold',
-          color: '#1a1a1a',
-          letterSpacing: '0.5px'
-        }}
-      >
-        HackaByte
-      </Typography>
+      {/* Brand name (optional) */}
+      {showText && (
+        <Typography 
+          variant={size === 'large' ? 'h4' : 'h6'} 
+          sx={{
+            fontWeight: 'bold',
+            color: '#000000',
+            letterSpacing: '0.5px'
+          }}
+        >
+          EduChat
+        </Typography>
+      )}
     </Box>
   );
 }
