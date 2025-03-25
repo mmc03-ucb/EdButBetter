@@ -36,6 +36,8 @@ import SendIcon from '@mui/icons-material/Send';
 import BookmarkIcon from '@mui/icons-material/Bookmark';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import Logo from './Logo';
+// Import mockThreads for non-lab3 content
+import { mockThreads } from '../data/mockData';
 
 // Styles
 const styles = {
@@ -93,6 +95,7 @@ function ThreadDetail() {
   const [thread, setThread] = useState(null); // Thread data object
   const [answers, setAnswers] = useState([]); // Array of answer objects
   const [newAnswer, setNewAnswer] = useState(''); // Content of the user's new answer
+  const [isLabThree, setIsLabThree] = useState(false); // Flag to determine if thread is from lab3
 
   // useEffect - Run on component mount and when threadId changes
   useEffect(() => {
@@ -108,18 +111,59 @@ function ThreadDetail() {
       }
     };
 
-    // Function to fetch thread details from Firestore
+    // Function to fetch thread details from Firestore or mockData
     const fetchThreadDetails = async () => {
       try {
+        // First try to fetch from Firestore (for lab3)
         const threadDoc = await getDoc(doc(db, "threads", threadId));
         
         if (threadDoc.exists()) {
+          // This is a lab3 thread from the database
           const threadData = threadDoc.data();
           setThread({
             id: threadDoc.id,
             ...threadData
           });
           setAnswers(threadData.answers || []);
+          setIsLabThree(true);
+        } else {
+          // Not a lab3 thread, look for it in mockData
+          // Find the thread in all mockData categories
+          let foundThread = null;
+          let threadCategory = null;
+          
+          // Search through all categories in mockData
+          for (const category in mockThreads) {
+            if (category === 'tcpThreads') continue; // Skip tcpThreads as they're for lab3
+            
+            const found = mockThreads[category].find(t => t.id.toString() === threadId);
+            if (found) {
+              foundThread = found;
+              threadCategory = category;
+              break;
+            }
+          }
+          
+          if (foundThread) {
+            // Create default answers if none exist
+            const mockAnswers = foundThread.answers || [
+              {
+                id: 1,
+                author: 'Prof. Williams',
+                authorAvatar: 'PW',
+                date: '1 day ago',
+                content: 'This is a sample answer to help clarify the question. Please refer to the course materials for more details.',
+                isAnswer: true,
+                isTutor: true,
+                votes: 15
+              }
+            ];
+            
+            setThread(foundThread);
+            setAnswers(mockAnswers);
+          } else {
+            console.error('Thread not found in mock data');
+          }
         }
       } catch (err) {
         console.error("Error fetching thread details:", err);
@@ -161,10 +205,12 @@ function ThreadDetail() {
         votes: 0
       };
       
-      // Update Firestore with new answer
-      await updateDoc(doc(db, "threads", threadId), {
-        answers: [...answers, newAnswerObj]
-      });
+      if (isLabThree) {
+        // Update Firestore with new answer (only for lab3 threads)
+        await updateDoc(doc(db, "threads", threadId), {
+          answers: [...answers, newAnswerObj]
+        });
+      }
       
       setAnswers([...answers, newAnswerObj]);
       setNewAnswer('');
@@ -250,7 +296,7 @@ function ThreadDetail() {
           {/* Thread content/body */}
           <Box sx={{ p: 3 }}>
             <Typography variant="body1" sx={{ whiteSpace: 'pre-line' }}>
-              {thread?.content}
+              {thread?.preview}
             </Typography>
           </Box>
           <Divider />
