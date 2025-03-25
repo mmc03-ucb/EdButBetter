@@ -15,7 +15,9 @@ import {
   InputAdornment,
   IconButton,
   Snackbar,
-  Alert
+  Alert,
+  useMediaQuery,
+  useTheme
 } from '@mui/material';
 // Firebase authentication and database imports
 import { auth, db, provider } from '../firebase/config';
@@ -124,6 +126,9 @@ function SignInSignUp() {
   
   // Form field state values
   const [formData, setFormData] = useState({ name: '', email: '', password: '' }); // Form data
+  
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down('md'));
   
   // Check if user is already authenticated on component mount
   useEffect(() => {
@@ -355,8 +360,8 @@ function SignInSignUp() {
                 Continue with Google
               </Button>
               
-              <Box sx={{ display: 'flex', justifyContent: 'center' }}>
-                <Typography variant="body1" color="text.secondary" sx={{ mr: 1 }}>
+              <Box sx={{ display: 'flex', justifyContent: 'center', flexDirection: isMobile ? 'column' : 'row', alignItems: 'center' }}>
+                <Typography variant="body1" color="text.secondary" sx={{ mr: isMobile ? 0 : 1, mb: isMobile ? 1 : 0, textAlign: isMobile ? 'center' : 'left' }}>
                   {isSignIn ? "Don't have an account?" : "Already have an account?"}
                 </Typography>
                 <Button 

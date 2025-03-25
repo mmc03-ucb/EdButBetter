@@ -10,7 +10,9 @@ import {
   Typography, 
   Divider,
   ListItemButton,
-  Collapse
+  Collapse,
+  useMediaQuery,
+  useTheme
 } from '@mui/material';
 import { 
   Home as HomeIcon, 
@@ -26,14 +28,14 @@ import {
 import { auth } from '../../firebase/config';
 import { signOut } from 'firebase/auth';
 import Logo from '../Logo';
-import { theme } from '../../styles/commonStyles';
+import { theme as appTheme } from '../../styles/commonStyles';
 
 const drawerWidth = 240;
 
 const courses = [
   { 
     id: 1, 
-    name: 'Web Development Bootcamp', 
+    name: 'Web Development Fundamentals', 
     code: 'CSE-301',
     icon: <CodeIcon fontSize="small" />,
     expanded: true,
@@ -48,6 +50,9 @@ const courses = [
 ];
 
 function Sidebar({ selectedSubsection, onSubsectionSelect }) {
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down('md'));
+
   const handleLogout = async () => {
     try {
       await signOut(auth);
@@ -57,12 +62,18 @@ function Sidebar({ selectedSubsection, onSubsectionSelect }) {
     }
   };
 
+  // On mobile, don't render the sidebar
+  if (isMobile) {
+    return null;
+  }
+
   return (
     <Drawer
       variant="permanent"
       sx={{
         width: drawerWidth,
         flexShrink: 0,
+        display: { xs: 'none', md: 'block' }, // Hide on mobile, show on desktop
         [`& .MuiDrawer-paper`]: { 
           width: drawerWidth, 
           boxSizing: 'border-box',
@@ -131,22 +142,23 @@ function Sidebar({ selectedSubsection, onSubsectionSelect }) {
               <List component="div" disablePadding dense>
                 {course.subsections.map((subsection) => (
                   <ListItemButton
+                    key={subsection.id}
                     onClick={() => onSubsectionSelect(subsection.id)}
                     sx={{
                       borderRadius: 1,
                       mb: 0.5,
                       '&:hover': {
-                        bgcolor: theme.colors.hover
+                        bgcolor: appTheme.colors.hover
                       }
                     }}
                   >
-                    <ListItemIcon sx={{ color: theme.colors.primary }}>
+                    <ListItemIcon sx={{ color: appTheme.colors.primary }}>
                       {subsection.icon}
                     </ListItemIcon>
                     <ListItemText 
                       primary={subsection.name}
                       sx={{ 
-                        color: theme.colors.primary,
+                        color: appTheme.colors.primary,
                         '& .MuiTypography-root': { fontWeight: 'medium' }
                       }}
                     />

@@ -6,7 +6,7 @@ import React from 'react';
 // React Router imports for navigation
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 // Material UI theming imports
-import { ThemeProvider, createTheme } from '@mui/material/styles';
+import { ThemeProvider, createTheme, responsiveFontSizes } from '@mui/material/styles';
 // Component imports for different pages
 import SignInSignUp from './components/SignInSignUp';
 import Landing from './components/Landing';
@@ -18,7 +18,7 @@ import { CacheProvider } from './context/CacheContext';
 
 // Create a custom theme with colors and styling for the entire application
 // This theme will be applied to all Material UI components
-const theme = createTheme({
+let theme = createTheme({
   palette: {
     primary: {
       main: '#7b1fa2', // Purple color used throughout the app
@@ -65,7 +65,19 @@ const theme = createTheme({
       },
     },
   },
+  breakpoints: {
+    values: {
+      xs: 0,
+      sm: 600,
+      md: 900,
+      lg: 1200,
+      xl: 1536,
+    },
+  },
 });
+
+// Make typography responsive
+theme = responsiveFontSizes(theme);
 
 // Main App component defining the application structure and routes
 function App() {

@@ -3,7 +3,7 @@
 // and allows users to select different subsections of the course
 
 import React, { useState, useEffect } from 'react';
-import { Box, CircularProgress, Typography } from '@mui/material';
+import { Box, CircularProgress, Typography, useMediaQuery, useTheme } from '@mui/material';
 import { auth, db } from '../firebase/config';
 import { onAuthStateChanged } from 'firebase/auth';
 import { doc, getDoc } from 'firebase/firestore';
@@ -18,6 +18,8 @@ function Landing() {
   const [loading, setLoading] = useState(true);
   const [selectedSubsection, setSelectedSubsection] = useState('assignment1');
   const [showInsights, setShowInsights] = useState(false);
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down('md'));
 
   useEffect(() => {
     const fetchUserName = async (user) => {
@@ -61,9 +63,18 @@ function Landing() {
       />
       
       <Box sx={{ flexGrow: 1, bgcolor: '#f8f9fa', display: 'flex', flexDirection: 'column' }}>
-        <AppBar userName={userName} />
+        <AppBar 
+          userName={userName} 
+          selectedSubsection={selectedSubsection}
+          onSubsectionSelect={setSelectedSubsection}
+        />
         
-        <Box sx={{ flexGrow: 1, overflow: 'auto', p: 3, bgcolor: '#f8f9fa' }}>
+        <Box sx={{ 
+          flexGrow: 1, 
+          overflow: 'auto', 
+          p: isMobile ? 1.5 : 3, 
+          bgcolor: '#f8f9fa' 
+        }}>
           {showInsights ? (
             <Insights 
               subsection={selectedSubsection} 

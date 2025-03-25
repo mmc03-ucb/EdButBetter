@@ -15,7 +15,9 @@ import {
   AppBar,
   Toolbar,
   Avatar,
-  Divider
+  Divider,
+  useMediaQuery,
+  useTheme
 } from '@mui/material';
 import SendIcon from '@mui/icons-material/Send';
 import SmartToyIcon from '@mui/icons-material/SmartToy';
@@ -43,6 +45,8 @@ function AIQandA() {
   ]);
   const navigate = useNavigate();
   const messagesEndRef = useRef(null);
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
 
   // Fetch threads on component mount
   useEffect(() => {
@@ -183,7 +187,7 @@ function AIQandA() {
           >
             <ArrowBackIcon />
           </IconButton>
-          <Logo size="small" />
+          {!isMobile && <Logo size="small" />}
           <Box sx={{ flexGrow: 1 }} />
           <Tooltip title="Clear conversation">
             <IconButton 
@@ -194,18 +198,29 @@ function AIQandA() {
               <DeleteIcon />
             </IconButton>
           </Tooltip>
-          <Button 
-            variant="text"
-            startIcon={<AccountCircleIcon />}
-            onClick={() => navigate('/profile')}
-            sx={{ color: '#7b1fa2', fontWeight: 'medium' }}
-          >
-            Profile
-          </Button>
+          {!isMobile && (
+            <Button 
+              variant="text"
+              startIcon={<AccountCircleIcon />}
+              onClick={() => navigate('/profile')}
+              sx={{ color: '#7b1fa2', fontWeight: 'medium' }}
+            >
+              Profile
+            </Button>
+          )}
         </Toolbar>
       </AppBar>
 
-      <Container maxWidth="lg" sx={{ py: 3, flexGrow: 1, display: 'flex', flexDirection: 'column' }}>
+      <Container 
+        maxWidth="lg" 
+        sx={{ 
+          py: isMobile ? 2 : 3, 
+          px: isMobile ? 1 : 3,
+          flexGrow: 1, 
+          display: 'flex', 
+          flexDirection: 'column' 
+        }}
+      >
         <Paper sx={{ 
           p: 0, 
           mb: 0, 
@@ -219,7 +234,7 @@ function AIQandA() {
           {/* Chat header */}
           <Box sx={{ 
             bgcolor: '#f7f7f9', 
-            p: 2, 
+            p: isMobile ? 1.5 : 2, 
             borderBottom: '1px solid rgba(0,0,0,0.1)',
             display: 'flex',
             alignItems: 'center'
@@ -227,24 +242,28 @@ function AIQandA() {
             <Avatar 
               sx={{ 
                 bgcolor: '#7b1fa2',
-                mr: 2 
+                mr: 2,
+                width: isMobile ? 36 : 40,
+                height: isMobile ? 36 : 40
               }}
             >
-              <SmartToyIcon />
+              <SmartToyIcon fontSize={isMobile ? "small" : "medium"} />
             </Avatar>
             <Box>
-              <Typography variant="h6" fontWeight="medium">
+              <Typography variant={isMobile ? "subtitle1" : "h6"} fontWeight="medium">
                 AI Forum Assistant
               </Typography>
-              <Typography variant="body2" color="text.secondary">
-                Ask me about your course materials and forum discussions
-              </Typography>
+              {!isMobile && (
+                <Typography variant="body2" color="text.secondary">
+                  Ask me about your course materials and forum discussions
+                </Typography>
+              )}
             </Box>
           </Box>
 
           {/* Chat messages */}
           <Box sx={{ 
-            p: 3, 
+            p: isMobile ? 2 : 3, 
             flexGrow: 1, 
             bgcolor: 'white',
             overflowY: 'auto',
@@ -264,16 +283,18 @@ function AIQandA() {
                     bgcolor: message.role === 'user' ? '#7b1fa2' : '#7b1fa2',
                     mt: 0.5,
                     mr: message.role === 'user' ? 0 : 2,
-                    ml: message.role === 'user' ? 2 : 0
+                    ml: message.role === 'user' ? 2 : 0,
+                    width: isMobile ? 32 : 40,
+                    height: isMobile ? 32 : 40
                   }}
                 >
-                  {message.role === 'user' ? <AccountCircleIcon /> : <SmartToyIcon />}
+                  {message.role === 'user' ? <AccountCircleIcon fontSize={isMobile ? "small" : "medium"} /> : <SmartToyIcon fontSize={isMobile ? "small" : "medium"} />}
                 </Avatar>
                 <Paper 
                   elevation={0}
                   sx={{ 
-                    p: 2, 
-                    maxWidth: '75%',
+                    p: isMobile ? 1.5 : 2, 
+                    maxWidth: isMobile ? '85%' : '75%',
                     borderRadius: 2,
                     bgcolor: message.role === 'user' ? '#f1e9f7' : '#f5f7f9'
                   }}
@@ -281,13 +302,13 @@ function AIQandA() {
                   {message.role === 'assistant' ? (
                     <Box sx={{ 
                       '& h1': { 
-                        fontSize: '1.3rem', 
+                        fontSize: isMobile ? '1.2rem' : '1.3rem', 
                         fontWeight: 600, 
                         mb: 2,
                         color: '#7b1fa2'
                       },
                       '& h2': { 
-                        fontSize: '1.1rem', 
+                        fontSize: isMobile ? '1rem' : '1.1rem', 
                         fontWeight: 600, 
                         mb: 2,
                         color: '#7b1fa2'
@@ -337,7 +358,7 @@ function AIQandA() {
                       </ReactMarkdown>
                     </Box>
                   ) : (
-                    <Typography>{message.content}</Typography>
+                    <Typography variant={isMobile ? "body2" : "body1"}>{message.content}</Typography>
                   )}
                 </Paper>
               </Box>
@@ -349,22 +370,24 @@ function AIQandA() {
                   sx={{ 
                     bgcolor: '#7b1fa2',
                     mr: 2,
-                    mt: 0.5
+                    mt: 0.5,
+                    width: isMobile ? 32 : 40,
+                    height: isMobile ? 32 : 40
                   }}
                 >
-                  <SmartToyIcon />
+                  <SmartToyIcon fontSize={isMobile ? "small" : "medium"} />
                 </Avatar>
                 <Paper 
                   elevation={0}
                   sx={{ 
-                    p: 2, 
+                    p: isMobile ? 1.5 : 2, 
                     display: 'inline-flex',
                     borderRadius: 2,
                     bgcolor: '#f5f7f9'
                   }}
                 >
-                  <CircularProgress size={20} sx={{ mr: 1 }} />
-                  <Typography>Thinking...</Typography>
+                  <CircularProgress size={isMobile ? 16 : 20} sx={{ mr: 1 }} />
+                  <Typography variant={isMobile ? "body2" : "body1"}>Thinking...</Typography>
                 </Paper>
               </Box>
             )}
@@ -375,21 +398,23 @@ function AIQandA() {
                   sx={{ 
                     bgcolor: '#f44336',
                     mr: 2,
-                    mt: 0.5
+                    mt: 0.5,
+                    width: isMobile ? 32 : 40,
+                    height: isMobile ? 32 : 40
                   }}
                 >
-                  <SmartToyIcon />
+                  <SmartToyIcon fontSize={isMobile ? "small" : "medium"} />
                 </Avatar>
                 <Paper 
                   elevation={0}
                   sx={{ 
-                    p: 2, 
+                    p: isMobile ? 1.5 : 2, 
                     display: 'inline-flex',
                     borderRadius: 2,
                     bgcolor: '#f5f7f9'
                   }}
                 >
-                  <Typography color="error">{error}</Typography>
+                  <Typography color="error" variant={isMobile ? "body2" : "body1"}>{error}</Typography>
                 </Paper>
               </Box>
             )}
@@ -398,7 +423,7 @@ function AIQandA() {
 
           {/* Input area */}
           <Box sx={{ 
-            p: 2, 
+            p: isMobile ? 1.5 : 2, 
             bgcolor: '#f7f7f9',
             borderTop: '1px solid rgba(0,0,0,0.1)'
           }}>
@@ -410,7 +435,7 @@ function AIQandA() {
                   placeholder="Ask your question..."
                   value={query}
                   onChange={handleQueryChange}
-                  size="medium"
+                  size={isMobile ? "small" : "medium"}
                   sx={{ 
                     "& .MuiOutlinedInput-root": {
                       bgcolor: 'white',
@@ -422,11 +447,12 @@ function AIQandA() {
                   type="submit" 
                   variant="contained" 
                   disabled={loading || !query.trim() || !threadsLoaded}
-                  endIcon={<SendIcon />}
+                  endIcon={!isMobile && <SendIcon />}
                   sx={{
                     bgcolor: '#7b1fa2',
                     borderRadius: 3,
-                    px: 3,
+                    px: isMobile ? 2 : 3,
+                    minWidth: isMobile ? '48px' : 'auto',
                     '&:hover': {
                       bgcolor: '#6a1b9a'
                     },
@@ -435,7 +461,7 @@ function AIQandA() {
                     }
                   }}
                 >
-                  Send
+                  {isMobile ? <SendIcon /> : 'Send'}
                 </Button>
               </Box>
             </form>

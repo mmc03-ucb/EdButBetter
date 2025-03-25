@@ -21,7 +21,9 @@ import {
   AppBar,
   Toolbar,
   Card,
-  Chip
+  Chip,
+  useMediaQuery,
+  useTheme
 } from '@mui/material';
 // Firebase imports for authentication and database
 import { auth, db } from '../firebase/config';
@@ -116,23 +118,38 @@ const ProfileCard = ({
   onDelete, 
   onRoleToggle,
   setName,
-  setEmail 
+  setEmail,
+  isMobile
 }) => (
   <Card sx={styles.profileCard}>
     <Box sx={styles.headerBanner}>
       <Chip
-        icon={isTutor ? <SchoolIcon sx={{ fontSize: 28 }} /> : <AccountCircleIcon sx={{ fontSize: 28 }} />}
+        icon={isTutor ? <SchoolIcon sx={{ fontSize: isMobile ? 24 : 28 }} /> : <AccountCircleIcon sx={{ fontSize: isMobile ? 24 : 28 }} />}
         label={isTutor ? "Tutor" : "Student"}
-        sx={styles.roleChip}
+        sx={{
+          ...styles.roleChip,
+          fontSize: isMobile ? '0.9rem' : '1.1rem',
+          minWidth: isMobile ? '120px' : '140px',
+          '& .MuiChip-label': {
+            padding: '4px 8px',
+            fontSize: isMobile ? '0.9rem' : '1.1rem'
+          }
+        }}
       />
     </Box>
     
     <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', position: 'relative', mt: -5 }}>
-      <Avatar sx={{ ...styles.avatar, bgcolor: isTutor ? '#f0b952' : '#7b1fa2' }}>
+      <Avatar sx={{ 
+        ...styles.avatar, 
+        bgcolor: isTutor ? '#f0b952' : '#7b1fa2',
+        width: isMobile ? 80 : 100,
+        height: isMobile ? 80 : 100,
+        fontSize: isMobile ? '2rem' : '2.5rem'
+      }}>
         {name.charAt(0).toUpperCase()}
       </Avatar>
       
-      <Box sx={{ p: 3, width: '100%', textAlign: 'center' }}>
+      <Box sx={{ p: isMobile ? 2 : 3, width: '100%', textAlign: 'center' }}>
         {editing ? (
           <>
             <TextField 
@@ -154,9 +171,16 @@ const ProfileCard = ({
           </>
         ) : (
           <>
-            <Typography variant="h5" fontWeight="bold" gutterBottom>{name}</Typography>
+            <Typography variant={isMobile ? "h6" : "h5"} fontWeight="bold" gutterBottom>{name}</Typography>
             <Typography variant="body1" color="text.secondary" gutterBottom>{email}</Typography>
-            <Box sx={{ display: 'flex', gap: 1, mt: 1, mb: 2, justifyContent: 'center', flexWrap: 'wrap' }}>
+            <Box sx={{ 
+              display: 'flex', 
+              gap: 1, 
+              mt: 1, 
+              mb: 2, 
+              justifyContent: 'center', 
+              flexWrap: 'wrap' 
+            }}>
               <Button size="small" variant="outlined" sx={{ borderRadius: 4, color: '#7b1fa2', borderColor: '#7b1fa2' }}>
                 {isTutor ? 'Teacher' : 'Beginner'}
               </Button>
@@ -169,7 +193,13 @@ const ProfileCard = ({
         
         <Divider sx={{ my: 2 }} />
         
-        <Box sx={{ mt: 2, display: 'flex', justifyContent: 'center', gap: 2 }}>
+        <Box sx={{ 
+          mt: 2, 
+          display: 'flex', 
+          justifyContent: 'center', 
+          gap: isMobile ? 1 : 2,
+          flexDirection: isMobile ? 'column' : 'row' 
+        }}>
           {editing ? (
             <Button 
               variant="contained" 
@@ -224,6 +254,8 @@ function Profile() {
   const [snackbar, setSnackbar] = useState({ open: false, message: '', severity: 'success' }); // Controls notification display
   const [editing, setEditing] = useState(false); // Whether user is in edit mode
   const [isTutor, setIsTutor] = useState(false); // Whether user is a tutor or student
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
 
   // useEffect hook to fetch user data when component mounts
   useEffect(() => {
@@ -343,22 +375,31 @@ function Profile() {
           >
             <ArrowBackIcon />
           </IconButton>
-          <Logo size="medium" />
+          {!isMobile && <Logo size="medium" />}
           <Box sx={{ flexGrow: 1 }} />
           <Button 
             variant="outlined" 
             color="error" 
-            startIcon={<LogoutIcon />}
+            startIcon={isMobile ? null : <LogoutIcon />}
             onClick={handleLogout}
             sx={styles.logoutButton}
           >
-            Logout
+            {isMobile ? <LogoutIcon /> : 'Logout'}
           </Button>
         </Toolbar>
       </AppBar>
 
       {/* Centered Profile Card */}
-      <Container maxWidth="sm" sx={{ mt: 5, mb: 8, display: 'flex', justifyContent: 'center' }}>
+      <Container 
+        maxWidth="sm" 
+        sx={{ 
+          mt: isMobile ? 2 : 5, 
+          mb: isMobile ? 4 : 8, 
+          px: isMobile ? 2 : 3,
+          display: 'flex', 
+          justifyContent: 'center' 
+        }}
+      >
         <ProfileCard
           name={name}
           email={email}
@@ -370,6 +411,7 @@ function Profile() {
           onRoleToggle={() => setIsTutor(!isTutor)}
           setName={setName}
           setEmail={setEmail}
+          isMobile={isMobile}
         />
       </Container>
 

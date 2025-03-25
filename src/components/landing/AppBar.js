@@ -19,7 +19,13 @@ import {
   DialogActions,
   ListItemIcon,
   ListItemText,
-  InputBase
+  InputBase,
+  useMediaQuery,
+  useTheme,
+  SwipeableDrawer,
+  List,
+  ListItemButton,
+  Collapse
 } from '@mui/material';
 import {
   Search as SearchIcon,
@@ -28,17 +34,39 @@ import {
   Settings as SettingsIcon,
   Logout as LogoutIcon,
   Delete as DeleteIcon,
-  SmartToy as SmartToyIcon
+  SmartToy as SmartToyIcon,
+  Menu as MenuIcon,
+  ExpandLess,
+  ExpandMore,
+  Assignment as AssignmentIcon,
+  Science as ScienceIcon,
+  Code as CodeIcon,
+  MenuBook as MenuBookIcon
 } from '@mui/icons-material';
 import { auth, db } from '../../firebase/config';
 import { signOut, deleteUser } from 'firebase/auth';
 import { deleteDoc, doc } from 'firebase/firestore';
 import { buttonStyles } from '../../styles/commonStyles';
+import Logo from '../Logo';
 
-function AppBar({ userName }) {
+// Course subsections data
+const courseSubsections = [
+  { id: 'assignment1', name: 'Assignment 1', icon: <AssignmentIcon fontSize="small" /> },
+  { id: 'lab1', name: 'Lab 1', icon: <MenuBookIcon fontSize="small" /> },
+  { id: 'lab2', name: 'Lab 2', icon: <MenuBookIcon fontSize="small" /> },
+  { id: 'lab3', name: 'Lab 3', icon: <MenuBookIcon fontSize="small" /> },
+  { id: 'general', name: 'General', icon: <ScienceIcon fontSize="small" /> },
+];
+
+function AppBar({ userName, selectedSubsection, onSubsectionSelect }) {
   const [userMenuAnchor, setUserMenuAnchor] = useState(null);
   const [notificationsMenuAnchor, setNotificationsMenuAnchor] = useState(null);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [courseExpanded, setCourseExpanded] = useState(true);
+  
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down('md'));
 
   const handleUserMenuOpen = (event) => {
     setUserMenuAnchor(event.currentTarget);
@@ -54,6 +82,14 @@ function AppBar({ userName }) {
 
   const handleNotificationsMenuClose = () => {
     setNotificationsMenuAnchor(null);
+  };
+
+  const toggleMobileMenu = (open) => () => {
+    setMobileMenuOpen(open);
+  };
+
+  const toggleCourseExpanded = () => {
+    setCourseExpanded(!courseExpanded);
   };
 
   const handleLogout = async () => {
@@ -77,6 +113,18 @@ function AppBar({ userName }) {
     }
   };
 
+  const handleNavigate = (path) => {
+    window.location.href = path;
+    setMobileMenuOpen(false);
+  };
+
+  const handleSubsectionSelect = (subsectionId) => {
+    if (onSubsectionSelect) {
+      onSubsectionSelect(subsectionId);
+      setMobileMenuOpen(false);
+    }
+  };
+
   return (
     <MuiAppBar 
       position="static" 
@@ -87,58 +135,79 @@ function AppBar({ userName }) {
         borderBottom: '1px solid rgba(0, 0, 0, 0.08)'
       }}
     >
-      <Toolbar>
-        <Typography variant="h6" component="div" fontWeight="bold" sx={{ color: '#7b1fa2' }}>
-          CSE-301: Web Development Bootcamp
-        </Typography>
+      <Toolbar sx={{ flexWrap: 'wrap' }}>
+        {isMobile && (
+          <IconButton
+            edge="start"
+            color="inherit"
+            aria-label="menu"
+            onClick={toggleMobileMenu(true)}
+            sx={{ mr: 1 }}
+          >
+            <MenuIcon />
+          </IconButton>
+        )}
+
+        {isMobile ? (
+          <Logo size="small" showText={false} />
+        ) : (
+          <Typography variant="h6" component="div" fontWeight="bold" sx={{ color: '#7b1fa2', flexGrow: isMobile ? 1 : 0 }}>
+            CSE-301: Web Development Fundamentals
+          </Typography>
+        )}
+        
         <Box sx={{ flexGrow: 1 }} />
         
-        <Paper
-          component="form"
-          sx={{ 
-            display: 'flex', 
-            alignItems: 'center', 
-            height: 36,
-            width: 240,
-            px: 1,
-            mx: 1,
-            borderRadius: 3,
-            bgcolor: '#f1f3f4'
-          }}
-        >
-          <SearchIcon sx={{ color: 'text.secondary', fontSize: '1.2rem', mr: 1 }} />
-          <InputBase
-            placeholder="Search discussions..."
-            style={{ 
-              border: 'none',
-              background: 'none',
-              outline: 'none',
-              width: '100%',
-              fontSize: '0.875rem'
-            }}
-          />
-        </Paper>
-        
-        <Tooltip title="AI Assistant">
-          <Button
-            startIcon={<SmartToyIcon />}
-            variant="outlined"
-            size="small"
-            onClick={() => { window.location.href = '/ai-qa'; }}
-            sx={{
-              borderRadius: 2,
-              mr: 1,
-              borderColor: '#7b1fa2',
-              color: '#7b1fa2',
-              '&:hover': {
-                borderColor: '#6a1b9a',
-                bgcolor: 'rgba(123, 31, 162, 0.04)'
-              }
+        {!isMobile && (
+          <Paper
+            component="form"
+            sx={{ 
+              display: 'flex', 
+              alignItems: 'center', 
+              height: 36,
+              width: 240,
+              px: 1,
+              mx: 1,
+              borderRadius: 3,
+              bgcolor: '#f1f3f4'
             }}
           >
-            AI Assistant
-          </Button>
-        </Tooltip>
+            <SearchIcon sx={{ color: 'text.secondary', fontSize: '1.2rem', mr: 1 }} />
+            <InputBase
+              placeholder="Search discussions..."
+              style={{ 
+                border: 'none',
+                background: 'none',
+                outline: 'none',
+                width: '100%',
+                fontSize: '0.875rem'
+              }}
+            />
+          </Paper>
+        )}
+        
+        {!isMobile && (
+          <Tooltip title="AI Assistant">
+            <Button
+              startIcon={<SmartToyIcon />}
+              variant="outlined"
+              size="small"
+              onClick={() => { window.location.href = '/ai-qa'; }}
+              sx={{
+                borderRadius: 2,
+                mr: 1,
+                borderColor: '#7b1fa2',
+                color: '#7b1fa2',
+                '&:hover': {
+                  borderColor: '#6a1b9a',
+                  bgcolor: 'rgba(123, 31, 162, 0.04)'
+                }
+              }}
+            >
+              AI Assistant
+            </Button>
+          </Tooltip>
+        )}
         
         <Tooltip title="Notifications">
           <IconButton 
@@ -164,6 +233,81 @@ function AppBar({ userName }) {
           </IconButton>
         </Tooltip>
       </Toolbar>
+
+      {/* Mobile Navigation Drawer */}
+      <SwipeableDrawer
+        anchor="left"
+        open={mobileMenuOpen}
+        onClose={toggleMobileMenu(false)}
+        onOpen={toggleMobileMenu(true)}
+      >
+        <Box sx={{ width: 250, pt: 2, pb: 3 }} role="presentation">
+          <Box sx={{ display: 'flex', justifyContent: 'center', mb: 2 }}>
+            <Logo size="medium" />
+          </Box>
+          <Divider sx={{ mb: 2 }} />
+          <List>
+            <MenuItem onClick={() => handleNavigate('/landing')}>
+              <ListItemText primary="Home" />
+            </MenuItem>
+
+            {/* Course and subsections in mobile menu */}
+            <ListItemButton onClick={toggleCourseExpanded} sx={{ pl: 2 }}>
+              <ListItemIcon>
+                <CodeIcon fontSize="small" color="primary" />
+              </ListItemIcon>
+              <ListItemText 
+                primary="CSE-301" 
+                secondary="Web Development Fundamentals"
+                primaryTypographyProps={{ fontWeight: 'medium' }}
+                secondaryTypographyProps={{ fontSize: '0.8rem' }}
+              />
+              {courseExpanded ? <ExpandLess /> : <ExpandMore />}
+            </ListItemButton>
+            
+            <Collapse in={courseExpanded} timeout="auto" unmountOnExit>
+              <List component="div" disablePadding>
+                {courseSubsections.map((subsection) => (
+                  <ListItemButton 
+                    key={subsection.id}
+                    onClick={() => handleSubsectionSelect(subsection.id)} 
+                    sx={{ pl: 4 }}
+                    selected={selectedSubsection === subsection.id}
+                  >
+                    <ListItemIcon sx={{ color: '#7b1fa2' }}>
+                      {subsection.icon}
+                    </ListItemIcon>
+                    <ListItemText 
+                      primary={subsection.name} 
+                      sx={{ color: '#7b1fa2' }}
+                    />
+                  </ListItemButton>
+                ))}
+              </List>
+            </Collapse>
+
+            <MenuItem onClick={() => handleNavigate('/ai-qa')}>
+              <ListItemIcon>
+                <SmartToyIcon fontSize="small" />
+              </ListItemIcon>
+              <ListItemText primary="AI Assistant" />
+            </MenuItem>
+            <MenuItem onClick={() => handleNavigate('/profile')}>
+              <ListItemIcon>
+                <AccountCircleIcon fontSize="small" />
+              </ListItemIcon>
+              <ListItemText primary="Profile" />
+            </MenuItem>
+            <Divider sx={{ my: 1 }} />
+            <MenuItem onClick={handleLogout}>
+              <ListItemIcon>
+                <LogoutIcon fontSize="small" />
+              </ListItemIcon>
+              <ListItemText primary="Logout" />
+            </MenuItem>
+          </List>
+        </Box>
+      </SwipeableDrawer>
 
       <Menu
         anchorEl={userMenuAnchor}
