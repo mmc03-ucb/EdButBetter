@@ -19,11 +19,12 @@ import {
   Settings as SettingsIcon, 
   Logout as LogoutIcon,
   Assignment as AssignmentIcon,
-  Science as ScienceIcon,
+  Forum as ForumIcon,
   Code as CodeIcon,
   MenuBook as MenuBookIcon,
   ExpandLess,
-  ExpandMore
+  ExpandMore,
+  RecordVoiceOver as RecordVoiceOverIcon
 } from '@mui/icons-material';
 import { auth } from '../../firebase/config';
 import { signOut } from 'firebase/auth';
@@ -35,7 +36,7 @@ const drawerWidth = 240;
 const courses = [
   { 
     id: 1, 
-    name: 'Web Development Fundamentals', 
+    name: 'Networks', 
     code: 'CSE-301',
     icon: <CodeIcon fontSize="small" />,
     expanded: true,
@@ -44,8 +45,8 @@ const courses = [
       { id: 'lab1', name: 'Lab 1', icon: <MenuBookIcon fontSize="small" /> },
       { id: 'lab2', name: 'Lab 2', icon: <MenuBookIcon fontSize="small" /> },
       { id: 'lab3', name: 'Lab 3', icon: <MenuBookIcon fontSize="small" /> },
-      { id: 'general', name: 'General', icon: <ScienceIcon fontSize="small" /> },
-      { id: 'rant', name: 'Rant', icon: <ScienceIcon fontSize="small" /> },
+      { id: 'general', name: 'General', icon: <ForumIcon fontSize="small" /> },
+      { id: 'rant', name: 'Rant', icon: <RecordVoiceOverIcon fontSize="small" /> },
     ]
   }
 ];

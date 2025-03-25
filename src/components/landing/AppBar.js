@@ -39,9 +39,10 @@ import {
   ExpandLess,
   ExpandMore,
   Assignment as AssignmentIcon,
-  Science as ScienceIcon,
+  Forum as ForumIcon,
   Code as CodeIcon,
-  MenuBook as MenuBookIcon
+  MenuBook as MenuBookIcon,
+  RecordVoiceOver as RecordVoiceOverIcon
 } from '@mui/icons-material';
 import { auth, db } from '../../firebase/config';
 import { signOut, deleteUser } from 'firebase/auth';
@@ -56,7 +57,8 @@ const courseSubsections = [
   { id: 'lab1', name: 'Lab 1', icon: <MenuBookIcon fontSize="small" /> },
   { id: 'lab2', name: 'Lab 2', icon: <MenuBookIcon fontSize="small" /> },
   { id: 'lab3', name: 'Lab 3', icon: <MenuBookIcon fontSize="small" /> },
-  { id: 'general', name: 'General', icon: <ScienceIcon fontSize="small" /> },
+  { id: 'general', name: 'General', icon: <ForumIcon fontSize="small" /> },
+  { id: 'rant', name: 'Rant', icon: <RecordVoiceOverIcon fontSize="small" /> },
 ];
 
 function AppBar({ userName, selectedSubsection, onSubsectionSelect }) {
@@ -153,7 +155,7 @@ function AppBar({ userName, selectedSubsection, onSubsectionSelect }) {
           <Logo size="small" showText={false} />
         ) : (
           <Typography variant="h6" component="div" fontWeight="bold" sx={{ color: '#7b1fa2', flexGrow: isMobile ? 1 : 0 }}>
-            CSE-301: Web Development Fundamentals
+            CSE-301: Networks
           </Typography>
         )}
         
@@ -187,28 +189,27 @@ function AppBar({ userName, selectedSubsection, onSubsectionSelect }) {
           </Paper>
         )}
         
-        {!isMobile && (
-          <Tooltip title="AI Assistant">
-            <Button
-              startIcon={<SmartToyIcon />}
-              variant="outlined"
-              size="small"
-              onClick={() => { window.location.href = '/ai-qa'; }}
-              sx={{
-                borderRadius: 2,
-                mr: 1,
-                borderColor: '#7b1fa2',
-                color: '#7b1fa2',
-                '&:hover': {
-                  borderColor: '#6a1b9a',
-                  bgcolor: 'rgba(123, 31, 162, 0.04)'
-                }
-              }}
-            >
-              AI Assistant
-            </Button>
-          </Tooltip>
-        )}
+        <Tooltip title="AI Assistant">
+          <Button
+            startIcon={<SmartToyIcon />}
+            variant="outlined"
+            onClick={() => { window.location.href = '/ai-qa'; }}
+            sx={{
+              borderRadius: 2,
+              mr: 1,
+              borderColor: '#7b1fa2',
+              color: '#7b1fa2',
+              '&:hover': {
+                borderColor: '#6a1b9a',
+                bgcolor: 'rgba(123, 31, 162, 0.04)'
+              }
+            }}
+          >
+            {!isMobile && 'AI Assistant'}
+          </Button>
+        </Tooltip>
+        
+        <RantButton />
         
         <Tooltip title="Notifications">
           <IconButton 
@@ -233,7 +234,6 @@ function AppBar({ userName, selectedSubsection, onSubsectionSelect }) {
             </Avatar>
           </IconButton>
         </Tooltip>
-        <RantButton />
       </Toolbar>
 
       {/* Mobile Navigation Drawer */}
@@ -260,7 +260,7 @@ function AppBar({ userName, selectedSubsection, onSubsectionSelect }) {
               </ListItemIcon>
               <ListItemText 
                 primary="CSE-301" 
-                secondary="Web Development Fundamentals"
+                secondary="Networks"
                 primaryTypographyProps={{ fontWeight: 'medium' }}
                 secondaryTypographyProps={{ fontSize: '0.8rem' }}
               />

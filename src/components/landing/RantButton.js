@@ -8,9 +8,11 @@ import {
   TextField,
   Box,
   Typography,
-  CircularProgress
+  CircularProgress,
+  useMediaQuery,
+  useTheme
 } from '@mui/material';
-import { EmojiEmotions as EmojiEmotionsIcon } from '@mui/icons-material';
+import { RecordVoiceOver as RecordVoiceOverIcon } from '@mui/icons-material';
 import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
 import { db } from '../../firebase/config';
 import { auth } from '../../firebase/config';
@@ -22,6 +24,8 @@ function RantButton() {
   const [convertedRant, setConvertedRant] = useState('');
   const [loading, setLoading] = useState(false);
   const { invalidateThreadList } = useCache();
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down('md'));
 
   const handleOpen = () => setOpen(true);
   const handleClose = () => {
@@ -91,17 +95,24 @@ function RantButton() {
   return (
     <>
       <Button
-        variant="contained"
-        startIcon={<EmojiEmotionsIcon />}
+        variant="outlined"
+        startIcon={<RecordVoiceOverIcon />}
         onClick={handleOpen}
         sx={{
-          bgcolor: '#7b1fa2',
+          borderRadius: 2,
+          mr: 1,
+          borderColor: '#7b1fa2',
+          color: '#7b1fa2',
+          height: '36px',
+          minWidth: isMobile ? '36px' : 'auto',
+          padding: isMobile ? '0 8px' : '0 16px',
           '&:hover': {
-            bgcolor: '#6a1b8d'
+            borderColor: '#6a1b9a',
+            bgcolor: 'rgba(123, 31, 162, 0.04)'
           }
         }}
       >
-        Rant
+        {!isMobile && 'Rant'}
       </Button>
 
       <Dialog open={open} onClose={handleClose} maxWidth="sm" fullWidth>

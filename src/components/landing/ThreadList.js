@@ -26,12 +26,14 @@ import { db } from '../../firebase/config';
 import { mockThreads } from '../../data/mockData';
 import { buttonStyles, paperStyles, getCategoryChipStyles, getAvatarColor } from '../../styles/commonStyles';
 import { useCache } from '../../context/CacheContext';
+import NewThreadDialog from './NewThreadDialog';
 
 function ThreadList({ subsection, onShowInsights }) {
   const [uploading, setUploading] = useState(false);
   const [threads, setThreads] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [newThreadDialogOpen, setNewThreadDialogOpen] = useState(false);
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
   const { cacheThreadList, getCachedThreadList, invalidateThreadList } = useCache();
@@ -79,18 +81,16 @@ function ThreadList({ subsection, onShowInsights }) {
         const q = query(threadsCollection, orderBy("createdAt", "desc"));
         const querySnapshot = await getDocs(q);
         
-        // Check for and remove duplicates
-        await removeDuplicateThreads(querySnapshot.docs);
-        
-        // Re-fetch threads after removing duplicates
-        const updatedSnapshot = await getDocs(q);
-        
-        fetchedThreads = updatedSnapshot.docs.map(doc => ({
-          id: doc.id,
-          ...doc.data(),
-          createdAt: doc.data().createdAt?.toDate().toLocaleDateString(),
-          updatedAt: doc.data().updatedAt?.toDate().toLocaleDateString()
-        }));
+        fetchedThreads = querySnapshot.docs.map(doc => {
+          const data = doc.data();
+          return {
+            id: doc.id,
+            ...data,
+            date: data.date || data.createdAt?.toDate().toLocaleString() || 'Just now',
+            createdAt: data.createdAt?.toDate().toLocaleDateString(),
+            updatedAt: data.updatedAt?.toDate().toLocaleDateString()
+          };
+        });
         
         cacheThreadList(subsection, fetchedThreads);
         setThreads(fetchedThreads);
@@ -112,51 +112,6 @@ function ThreadList({ subsection, onShowInsights }) {
   useEffect(() => {
     fetchThreads();
   }, [subsection, cacheThreadList, getCachedThreadList]);
-
-  // Helper function to remove duplicate threads
-  const removeDuplicateThreads = async (docs) => {
-    try {
-      // Group threads by title
-      const threadsByTitle = {};
-      docs.forEach(doc => {
-        const title = doc.data().title;
-        if (!threadsByTitle[title]) {
-          threadsByTitle[title] = [];
-        }
-        threadsByTitle[title].push({
-          id: doc.id,
-          createdAt: doc.data().createdAt
-        });
-      });
-      
-      // For each title with multiple threads, keep the newest one and delete the rest
-      const deletePromises = [];
-      for (const title in threadsByTitle) {
-        if (threadsByTitle[title].length > 1) {
-          // Sort by createdAt (newest first)
-          const sortedThreads = threadsByTitle[title].sort((a, b) => {
-            // If createdAt is not available, use a fallback approach
-            if (!a.createdAt || !b.createdAt) return 0;
-            return b.createdAt.seconds - a.createdAt.seconds;
-          });
-          
-          // Keep the first one (newest), delete the rest
-          for (let i = 1; i < sortedThreads.length; i++) {
-            deletePromises.push(deleteDoc(doc(db, "threads", sortedThreads[i].id)));
-          }
-        }
-      }
-      
-      // Execute all deletes
-      if (deletePromises.length > 0) {
-        await Promise.all(deletePromises);
-        console.log(`Removed ${deletePromises.length} duplicate threads`);
-        invalidateThreadList('lab3');
-      }
-    } catch (error) {
-      console.error("Error removing duplicates:", error);
-    }
-  };
 
   const handleThreadClick = (threadId) => {
     window.location.href = `/thread/${threadId}`;
@@ -206,6 +161,15 @@ function ThreadList({ subsection, onShowInsights }) {
     }
   };
 
+  const handleNewThread = () => {
+    setNewThreadDialogOpen(true);
+  };
+
+  const handleThreadCreated = () => {
+    invalidateThreadList(subsection);
+    fetchThreads();
+  };
+
   return (
     <>
       <Box sx={{ 
@@ -220,6 +184,7 @@ function ThreadList({ subsection, onShowInsights }) {
            subsection === 'lab1' ? 'Lab 1' :
            subsection === 'lab2' ? 'Lab 2' :
            subsection === 'lab3' ? 'Lab 3' :
+           subsection === 'rant' ? 'Rants' :
            'General Discussions'}
         </Typography>
         <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
@@ -246,26 +211,30 @@ function ThreadList({ subsection, onShowInsights }) {
               </Button>
             </>
           )}
-          {isMobile ? (
-            <IconButton 
-              color="primary" 
-              aria-label="new thread"
-              sx={{ 
-                bgcolor: '#7b1fa2', 
-                color: 'white',
-                '&:hover': { bgcolor: '#6a1b9a' }
-              }}
-            >
-              <AddIcon />
-            </IconButton>
-          ) : (
-            <Button 
-              variant="contained" 
-              startIcon={<ForumIcon />}
-              sx={{ ...buttonStyles.contained }}
-            >
-              New Thread
-            </Button>
+          {subsection !== 'rant' && (
+            isMobile ? (
+              <IconButton 
+                color="primary" 
+                aria-label="new thread"
+                onClick={handleNewThread}
+                sx={{ 
+                  bgcolor: '#7b1fa2', 
+                  color: 'white',
+                  '&:hover': { bgcolor: '#6a1b9a' }
+                }}
+              >
+                <AddIcon />
+              </IconButton>
+            ) : (
+              <Button 
+                variant="contained" 
+                startIcon={<ForumIcon />}
+                onClick={handleNewThread}
+                sx={{ ...buttonStyles.contained }}
+              >
+                New Thread
+              </Button>
+            )
           )}
         </Box>
       </Box>
@@ -386,6 +355,13 @@ function ThreadList({ subsection, onShowInsights }) {
           </Button>
         </Box>
       )}
+
+      <NewThreadDialog
+        open={newThreadDialogOpen}
+        onClose={() => setNewThreadDialogOpen(false)}
+        subsection={subsection}
+        onThreadCreated={handleThreadCreated}
+      />
     </>
   );
 }

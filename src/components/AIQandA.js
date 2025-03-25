@@ -36,7 +36,6 @@ function AIQandA() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [threads, setThreads] = useState([]);
-  const [threadsLoaded, setThreadsLoaded] = useState(false);
   const [messages, setMessages] = useState([
     {
       role: 'assistant',
@@ -64,7 +63,6 @@ function AIQandA() {
 
   const fetchThreads = async () => {
     try {
-      setLoading(true);
       const threadsCollection = collection(db, "threads");
       const querySnapshot = await getDocs(threadsCollection);
       
@@ -84,12 +82,9 @@ function AIQandA() {
       });
       
       setThreads(threadData);
-      setThreadsLoaded(true);
     } catch (err) {
       console.error('Error fetching threads:', err);
       setError('Failed to load threads. Please try again later.');
-    } finally {
-      setLoading(false);
     }
   };
 
@@ -108,7 +103,7 @@ function AIQandA() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!query.trim() || !threadsLoaded) return;
+    if (!query.trim()) return;
 
     // Add user message
     const userMessage = {
@@ -446,7 +441,7 @@ function AIQandA() {
                 <Button 
                   type="submit" 
                   variant="contained" 
-                  disabled={loading || !query.trim() || !threadsLoaded}
+                  disabled={loading || !query.trim()}
                   endIcon={!isMobile && <SendIcon />}
                   sx={{
                     bgcolor: '#7b1fa2',
