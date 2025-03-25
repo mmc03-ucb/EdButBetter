@@ -30,7 +30,7 @@ function Logo({ size = 'medium', showText = true }) {
       <Box
         component="img"
         src={logoImage}
-        alt="EduChat Logo"
+        alt="EdButBetter Logo"
         sx={{
           width: selectedSize.width,
           height: selectedSize.height,
@@ -49,7 +49,7 @@ function Logo({ size = 'medium', showText = true }) {
             letterSpacing: '0.5px'
           }}
         >
-          EduChat
+          EdButBetter
         </Typography>
       )}
     </Box>
