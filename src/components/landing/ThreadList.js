@@ -21,7 +21,7 @@ import {
   ThumbUp as ThumbUpIcon,
   Add as AddIcon
 } from '@mui/icons-material';
-import { collection, addDoc, serverTimestamp, getDocs, query, orderBy } from 'firebase/firestore';
+import { collection, addDoc, serverTimestamp, getDocs, query, orderBy, deleteDoc, doc } from 'firebase/firestore';
 import { db } from '../../firebase/config';
 import { mockThreads } from '../../data/mockData';
 import { buttonStyles, paperStyles, getCategoryChipStyles, getAvatarColor } from '../../styles/commonStyles';
@@ -58,7 +58,13 @@ function ThreadList({ subsection, onShowInsights }) {
       const q = query(threadsCollection, orderBy("createdAt", "desc"));
       const querySnapshot = await getDocs(q);
       
-      const fetchedThreads = querySnapshot.docs.map(doc => ({
+      // Check for and remove duplicates
+      await removeDuplicateThreads(querySnapshot.docs);
+      
+      // Re-fetch threads after removing duplicates
+      const updatedSnapshot = await getDocs(q);
+      
+      const fetchedThreads = updatedSnapshot.docs.map(doc => ({
         id: doc.id,
         ...doc.data(),
         createdAt: doc.data().createdAt?.toDate().toLocaleDateString(),
@@ -76,6 +82,51 @@ function ThreadList({ subsection, onShowInsights }) {
     }
   };
 
+  // Helper function to remove duplicate threads
+  const removeDuplicateThreads = async (docs) => {
+    try {
+      // Group threads by title
+      const threadsByTitle = {};
+      docs.forEach(doc => {
+        const title = doc.data().title;
+        if (!threadsByTitle[title]) {
+          threadsByTitle[title] = [];
+        }
+        threadsByTitle[title].push({
+          id: doc.id,
+          createdAt: doc.data().createdAt
+        });
+      });
+      
+      // For each title with multiple threads, keep the newest one and delete the rest
+      const deletePromises = [];
+      for (const title in threadsByTitle) {
+        if (threadsByTitle[title].length > 1) {
+          // Sort by createdAt (newest first)
+          const sortedThreads = threadsByTitle[title].sort((a, b) => {
+            // If createdAt is not available, use a fallback approach
+            if (!a.createdAt || !b.createdAt) return 0;
+            return b.createdAt.seconds - a.createdAt.seconds;
+          });
+          
+          // Keep the first one (newest), delete the rest
+          for (let i = 1; i < sortedThreads.length; i++) {
+            deletePromises.push(deleteDoc(doc(db, "threads", sortedThreads[i].id)));
+          }
+        }
+      }
+      
+      // Execute all deletes
+      if (deletePromises.length > 0) {
+        await Promise.all(deletePromises);
+        console.log(`Removed ${deletePromises.length} duplicate threads`);
+        invalidateThreadList('lab3');
+      }
+    } catch (error) {
+      console.error("Error removing duplicates:", error);
+    }
+  };
+
   const handleThreadClick = (threadId) => {
     window.location.href = `/thread/${threadId}`;
   };
@@ -86,7 +137,21 @@ function ThreadList({ subsection, onShowInsights }) {
       const threadsCollection = collection(db, "threads");
       const tcpThreads = mockThreads.tcpThreads;
 
-      for (const thread of tcpThreads) {
+      // First, get all existing threads to check for duplicates
+      const existingThreadsSnapshot = await getDocs(threadsCollection);
+      const existingThreadTitles = existingThreadsSnapshot.docs.map(doc => doc.data().title);
+      
+      // Filter out any threads that already exist (by title)
+      const newThreadsToAdd = tcpThreads.filter(thread => !existingThreadTitles.includes(thread.title));
+      
+      if (newThreadsToAdd.length === 0) {
+        alert("No new threads to add. All demo threads already exist in the database.");
+        setUploading(false);
+        return;
+      }
+
+      // Add only new threads
+      for (const thread of newThreadsToAdd) {
         await addDoc(threadsCollection, {
           ...thread,
           createdAt: serverTimestamp(),
@@ -100,7 +165,7 @@ function ThreadList({ subsection, onShowInsights }) {
 
       invalidateThreadList('lab3');
       
-      alert("Mock TCP threads uploaded successfully!");
+      alert(`${newThreadsToAdd.length} mock TCP threads uploaded successfully!`);
       fetchThreads();
     } catch (err) {
       console.error("Error uploading mock data:", err);
