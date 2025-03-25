@@ -136,7 +136,7 @@ app.post('/api/convert-to-emoji', async (req, res) => {
 
 Text to convert: "${text}"
 
-Return only the converted text, no additional text or explanation.`;
+Return only the converted text, no additional text or explanation. no word from the original text should be recognizable.`;
 
     const result = await model.generateContent(prompt);
     const response = await result.response;

@@ -105,12 +105,12 @@ function RantButton() {
       </Button>
 
       <Dialog open={open} onClose={handleClose} maxWidth="sm" fullWidth>
-        <DialogTitle>Speak your mind</DialogTitle>
+        <DialogTitle>Share Your Rant</DialogTitle>
         <DialogContent>
           <TextField
             autoFocus
             margin="dense"
-            label="Exercise your Article 19 💪🗣️"
+            label="Your Rant"
             fullWidth
             multiline
             rows={4}
