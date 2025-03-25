@@ -124,7 +124,7 @@ function ThreadList({ subsection, onShowInsights }) {
                 disabled={uploading}
                 sx={{ mr: 2, ...buttonStyles.outlined }}
               >
-                {uploading ? <CircularProgress size={24} /> : 'Upload Mock TCP Threads'}
+                {uploading ? <CircularProgress size={24} /> : 'Demo Threads'}
               </Button>
               <Button
                 variant="outlined"
