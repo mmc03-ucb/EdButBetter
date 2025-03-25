@@ -73,7 +73,7 @@ Use proper markdown formatting for headers, lists, and emphasis.`;
 // API endpoint for AI Q/A
 app.post('/api/ai-qa', async (req, res) => {
   try {
-    const { query, threads } = req.body;
+    const { query, threads, conversationHistory } = req.body;
 
     if (!query || !threads || !Array.isArray(threads)) {
       return res.status(400).json({ error: 'Invalid request data' });
@@ -82,17 +82,21 @@ app.post('/api/ai-qa', async (req, res) => {
     const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash-lite" });
 
     // Format the prompt for Gemini
-    const prompt = `You are a helpful AI tutor for a discussion forum about computer science and programming. 
+    const prompt = `You are a helpful AI assistant for a discussion forum about computer science and programming. 
 Answer the following question using ONLY the information available in the provided threads.
-If the answer cannot be found in the threads, explicitly state "I don't have enough information to answer that question. Please ask in the thread."
+If the answer cannot be found in the threads, explicitly state "I don't have enough information to answer that question based on the forum threads. Please ask in the thread."
 
-User question: ${query}
+${conversationHistory ? `Recent conversation history:
+${conversationHistory}
+
+` : ''}User question: ${query}
 
 Threads data:
 ${JSON.stringify(threads, null, 2)}
-Explain your answer so that it is easy to understand. Be thorough and detailed.
+
 Format your response in a conversational way. Use markdown formatting where appropriate for code snippets, lists, or emphasis.
-When referencing a thread, mention it as follows: "According to [Thread Title]" or "As mentioned in [Thread Title]" Hyperlink [Thread Title]`;
+When referencing a thread, mention it as follows: "According to [Thread Title]" or "As mentioned in [Thread Title]"
+Explain your answer so that it is easy to understand. Be thorough and detailed where appropriate and concise otherwise. If you're answering a follow-up question, take into account the previous conversation.`;
 
     const result = await model.generateContent(prompt);
     const response = await result.response;
