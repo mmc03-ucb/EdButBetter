@@ -121,6 +121,34 @@ Explain your answer so that it is easy to understand. Be thorough and detailed w
   }
 });
 
+// API endpoint for converting text to emoji
+app.post('/api/convert-to-emoji', async (req, res) => {
+  try {
+    const { text } = req.body;
+
+    if (!text) {
+      return res.status(400).json({ error: 'Text is required' });
+    }
+
+    const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash-lite" });
+
+    const prompt = `Convert every word in the following text into gibberish english that does not contain any profanities. None of the words should be recognizable.
+
+Text to convert: "${text}"
+
+Return only the converted text, no additional text or explanation.`;
+
+    const result = await model.generateContent(prompt);
+    const response = await result.response;
+    const emojiText = response.text().trim();
+
+    return res.status(200).json({ emojiText });
+  } catch (error) {
+    console.error('Error converting text to emoji:', error);
+    return res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
 app.listen(port, () => {
   console.log(`Server running on port ${port}`);
 }); 

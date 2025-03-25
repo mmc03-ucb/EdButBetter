@@ -45,6 +45,7 @@ const courses = [
       { id: 'lab2', name: 'Lab 2', icon: <MenuBookIcon fontSize="small" /> },
       { id: 'lab3', name: 'Lab 3', icon: <MenuBookIcon fontSize="small" /> },
       { id: 'general', name: 'General', icon: <ScienceIcon fontSize="small" /> },
+      { id: 'rant', name: 'Rant', icon: <ScienceIcon fontSize="small" /> },
     ]
   }
 ];

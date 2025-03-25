@@ -21,7 +21,7 @@ import {
   ThumbUp as ThumbUpIcon,
   Add as AddIcon
 } from '@mui/icons-material';
-import { collection, addDoc, serverTimestamp, getDocs, query, orderBy, deleteDoc, doc } from 'firebase/firestore';
+import { collection, addDoc, serverTimestamp, getDocs, query, orderBy, deleteDoc, doc, onSnapshot } from 'firebase/firestore';
 import { db } from '../../firebase/config';
 import { mockThreads } from '../../data/mockData';
 import { buttonStyles, paperStyles, getCategoryChipStyles, getAvatarColor } from '../../styles/commonStyles';
@@ -29,58 +29,89 @@ import { useCache } from '../../context/CacheContext';
 
 function ThreadList({ subsection, onShowInsights }) {
   const [uploading, setUploading] = useState(false);
-  const [loading, setLoading] = useState(false);
   const [threads, setThreads] = useState([]);
-  const { cacheThreadList, getCachedThreadList, invalidateThreadList } = useCache();
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   const theme = useTheme();
-  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
-
-  useEffect(() => {
-    if (subsection === 'lab3') {
-      fetchThreads();
-    } else {
-      setThreads(mockThreads[subsection] || []);
-    }
-  }, [subsection]);
+  const isMobile = useMediaQuery(theme.breakpoints.down('md'));
+  const { cacheThreadList, getCachedThreadList, invalidateThreadList } = useCache();
 
   const fetchThreads = async () => {
     setLoading(true);
+    setError(null);
+
     try {
-      const cachedThreadList = getCachedThreadList('lab3');
-      
-      if (cachedThreadList) {
-        setThreads(cachedThreadList);
+      // Check cache first
+      const cachedData = getCachedThreadList(subsection);
+      if (cachedData) {
+        setThreads(cachedData);
         setLoading(false);
         return;
       }
-      
-      const threadsCollection = collection(db, "threads");
-      const q = query(threadsCollection, orderBy("createdAt", "desc"));
-      const querySnapshot = await getDocs(q);
-      
-      // Check for and remove duplicates
-      await removeDuplicateThreads(querySnapshot.docs);
-      
-      // Re-fetch threads after removing duplicates
-      const updatedSnapshot = await getDocs(q);
-      
-      const fetchedThreads = updatedSnapshot.docs.map(doc => ({
-        id: doc.id,
-        ...doc.data(),
-        createdAt: doc.data().createdAt?.toDate().toLocaleDateString(),
-        updatedAt: doc.data().updatedAt?.toDate().toLocaleDateString()
-      }));
-      
-      cacheThreadList('lab3', fetchedThreads);
-      
-      setThreads(fetchedThreads);
+
+      let fetchedThreads = [];
+
+      if (subsection === 'rant') {
+        // Set up real-time listener for rants
+        const rantsQuery = query(collection(db, 'rants'), orderBy('date', 'desc'));
+        const unsubscribe = onSnapshot(rantsQuery, (snapshot) => {
+          const fetchedThreads = snapshot.docs.map(doc => ({
+            id: doc.id,
+            ...doc.data(),
+            date: doc.data().date?.toDate().toLocaleString() || 'Just now'
+          }));
+          
+          // Cache the fetched data
+          cacheThreadList(subsection, fetchedThreads);
+          setThreads(fetchedThreads);
+          setLoading(false);
+        }, (error) => {
+          console.error('Error fetching rants:', error);
+          setError('Failed to load rants. Please try again later.');
+          setLoading(false);
+        });
+
+        // Cleanup subscription on unmount
+        return () => unsubscribe();
+      } else if (subsection === 'lab3') {
+        // Fetch lab3 threads from Firestore
+        const threadsCollection = collection(db, "threads");
+        const q = query(threadsCollection, orderBy("createdAt", "desc"));
+        const querySnapshot = await getDocs(q);
+        
+        // Check for and remove duplicates
+        await removeDuplicateThreads(querySnapshot.docs);
+        
+        // Re-fetch threads after removing duplicates
+        const updatedSnapshot = await getDocs(q);
+        
+        fetchedThreads = updatedSnapshot.docs.map(doc => ({
+          id: doc.id,
+          ...doc.data(),
+          createdAt: doc.data().createdAt?.toDate().toLocaleDateString(),
+          updatedAt: doc.data().updatedAt?.toDate().toLocaleDateString()
+        }));
+        
+        cacheThreadList(subsection, fetchedThreads);
+        setThreads(fetchedThreads);
+        setLoading(false);
+      } else {
+        // For other sections, use mock data
+        fetchedThreads = mockThreads[subsection] || [];
+        cacheThreadList(subsection, fetchedThreads);
+        setThreads(fetchedThreads);
+        setLoading(false);
+      }
     } catch (err) {
-      console.error("Error fetching threads:", err);
-      alert(`Error fetching threads: ${err.message}`);
-    } finally {
+      console.error('Error fetching threads:', err);
+      setError('Failed to load threads. Please try again later.');
       setLoading(false);
     }
   };
+
+  useEffect(() => {
+    fetchThreads();
+  }, [subsection, cacheThreadList, getCachedThreadList]);
 
   // Helper function to remove duplicate threads
   const removeDuplicateThreads = async (docs) => {

@@ -15,6 +15,10 @@ export const theme = {
       resources: {
         bg: 'rgba(123, 31, 162, 0.1)',
         text: '#7b1fa2'
+      },
+      rant: {
+        bg: 'rgba(244, 67, 54, 0.1)',
+        text: '#d32f2f'
       }
     }
   }

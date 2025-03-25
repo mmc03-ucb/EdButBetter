@@ -48,6 +48,7 @@ import { signOut, deleteUser } from 'firebase/auth';
 import { deleteDoc, doc } from 'firebase/firestore';
 import { buttonStyles } from '../../styles/commonStyles';
 import Logo from '../Logo';
+import RantButton from './RantButton';
 
 // Course subsections data
 const courseSubsections = [
@@ -232,6 +233,7 @@ function AppBar({ userName, selectedSubsection, onSubsectionSelect }) {
             </Avatar>
           </IconButton>
         </Tooltip>
+        <RantButton />
       </Toolbar>
 
       {/* Mobile Navigation Drawer */}
