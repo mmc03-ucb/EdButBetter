@@ -38,6 +38,8 @@ import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import Logo from './Logo';
 // Import mockThreads for non-lab3 content
 import { mockThreads } from '../data/mockData';
+// Import cache context hook
+import { useCache } from '../context/CacheContext';
 
 // Styles
 const styles = {
@@ -88,6 +90,8 @@ function ThreadDetail() {
   const { threadId } = useParams();
   // Initialize navigation for redirecting users
   const navigate = useNavigate();
+  // Get cache functions
+  const { cacheThread, getCachedThread, invalidateThread } = useCache();
   
   // State management
   const [userName, setUserName] = useState(''); // Current user's name
@@ -114,17 +118,39 @@ function ThreadDetail() {
     // Function to fetch thread details from Firestore or mockData
     const fetchThreadDetails = async () => {
       try {
-        // First try to fetch from Firestore (for lab3)
+        // Check if thread is in cache first
+        const cachedThreadData = getCachedThread(threadId);
+        
+        if (cachedThreadData) {
+          // Use cached data
+          setThread(cachedThreadData.thread);
+          setAnswers(cachedThreadData.answers);
+          setIsLabThree(cachedThreadData.isLabThree);
+          setLoading(false);
+          return;
+        }
+        
+        // If not in cache, fetch from Firestore (for lab3)
         const threadDoc = await getDoc(doc(db, "threads", threadId));
         
         if (threadDoc.exists()) {
           // This is a lab3 thread from the database
           const threadData = threadDoc.data();
-          setThread({
+          const threadObj = {
             id: threadDoc.id,
             ...threadData
+          };
+          const answersArr = threadData.answers || [];
+          
+          // Cache the thread data
+          cacheThread(threadId, {
+            thread: threadObj,
+            answers: answersArr,
+            isLabThree: true
           });
-          setAnswers(threadData.answers || []);
+          
+          setThread(threadObj);
+          setAnswers(answersArr);
           setIsLabThree(true);
         } else {
           // Not a lab3 thread, look for it in mockData
@@ -159,6 +185,13 @@ function ThreadDetail() {
               }
             ];
             
+            // Cache the thread data (even though it's mock data, for consistency)
+            cacheThread(threadId, {
+              thread: foundThread,
+              answers: mockAnswers,
+              isLabThree: false
+            });
+            
             setThread(foundThread);
             setAnswers(mockAnswers);
           } else {
@@ -188,7 +221,7 @@ function ThreadDetail() {
 
     // Cleanup the auth listener on component unmount
     return () => unsubscribe();
-  }, [threadId, navigate]); // Removed fetchThreadDetails from dependencies since it's now inside useEffect
+  }, [threadId, navigate, cacheThread, getCachedThread]);
 
   // Handler for submitting a new answer
   const handleSubmitAnswer = async () => {
@@ -210,6 +243,9 @@ function ThreadDetail() {
         await updateDoc(doc(db, "threads", threadId), {
           answers: [...answers, newAnswerObj]
         });
+        
+        // Invalidate the thread in cache since it's been updated
+        invalidateThread(threadId);
       }
       
       setAnswers([...answers, newAnswerObj]);

@@ -21,11 +21,13 @@ import { collection, addDoc, serverTimestamp, getDocs, query, orderBy } from 'fi
 import { db } from '../../firebase/config';
 import { mockThreads } from '../../data/mockData';
 import { buttonStyles, paperStyles, getCategoryChipStyles, getAvatarColor } from '../../styles/commonStyles';
+import { useCache } from '../../context/CacheContext';
 
 function ThreadList({ subsection, onShowInsights }) {
   const [uploading, setUploading] = useState(false);
   const [loading, setLoading] = useState(false);
   const [threads, setThreads] = useState([]);
+  const { cacheThreadList, getCachedThreadList, invalidateThreadList } = useCache();
 
   useEffect(() => {
     if (subsection === 'lab3') {
@@ -38,6 +40,14 @@ function ThreadList({ subsection, onShowInsights }) {
   const fetchThreads = async () => {
     setLoading(true);
     try {
+      const cachedThreadList = getCachedThreadList('lab3');
+      
+      if (cachedThreadList) {
+        setThreads(cachedThreadList);
+        setLoading(false);
+        return;
+      }
+      
       const threadsCollection = collection(db, "threads");
       const q = query(threadsCollection, orderBy("createdAt", "desc"));
       const querySnapshot = await getDocs(q);
@@ -48,6 +58,8 @@ function ThreadList({ subsection, onShowInsights }) {
         createdAt: doc.data().createdAt?.toDate().toLocaleDateString(),
         updatedAt: doc.data().updatedAt?.toDate().toLocaleDateString()
       }));
+      
+      cacheThreadList('lab3', fetchedThreads);
       
       setThreads(fetchedThreads);
     } catch (err) {
@@ -80,8 +92,10 @@ function ThreadList({ subsection, onShowInsights }) {
         });
       }
 
+      invalidateThreadList('lab3');
+      
       alert("Mock TCP threads uploaded successfully!");
-      fetchThreads(); // Refresh the threads after upload
+      fetchThreads();
     } catch (err) {
       console.error("Error uploading mock data:", err);
       alert(`Error uploading mock data: ${err.message}`);

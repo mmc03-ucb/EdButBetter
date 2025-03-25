@@ -12,6 +12,8 @@ import SignInSignUp from './components/SignInSignUp';
 import Landing from './components/Landing';
 import Profile from './components/Profile';
 import ThreadDetail from './components/ThreadDetail';
+// Import cache context provider
+import { CacheProvider } from './context/CacheContext';
 
 // Create a custom theme with colors and styling for the entire application
 // This theme will be applied to all Material UI components
@@ -69,20 +71,23 @@ function App() {
   return (
     // ThemeProvider applies our custom theme to all child components
     <ThemeProvider theme={theme}>
-      {/* Router sets up the navigation system */}
-      <Router>
-        {/* Routes define the available paths and which component to render for each */}
-        <Routes>
-          {/* Sign In / Sign Up page (default route) */}
-          <Route path="/" element={<SignInSignUp />} />
-          {/* Landing page with forum listing */}
-          <Route path="/landing" element={<Landing />} />
-          {/* User profile page */}
-          <Route path="/profile" element={<Profile />} />
-          {/* Thread detail page with dynamic threadId parameter */}
-          <Route path="/thread/:threadId" element={<ThreadDetail />} />
-        </Routes>
-      </Router>
+      {/* CacheProvider wraps the application to provide cached data */}
+      <CacheProvider>
+        {/* Router sets up the navigation system */}
+        <Router>
+          {/* Routes define the available paths and which component to render for each */}
+          <Routes>
+            {/* Sign In / Sign Up page (default route) */}
+            <Route path="/" element={<SignInSignUp />} />
+            {/* Landing page with forum listing */}
+            <Route path="/landing" element={<Landing />} />
+            {/* User profile page */}
+            <Route path="/profile" element={<Profile />} />
+            {/* Thread detail page with dynamic threadId parameter */}
+            <Route path="/thread/:threadId" element={<ThreadDetail />} />
+          </Routes>
+        </Router>
+      </CacheProvider>
     </ThemeProvider>
   );
 }

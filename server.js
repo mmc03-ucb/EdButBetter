@@ -29,21 +29,21 @@ app.post('/api/gemini-summary', async (req, res) => {
 
 Threads data:
 ${JSON.stringify(threads, null, 2)}
-
+if there are no threads, return "No Active Threads, start a new thread!"
 Start directly with the important announcements if any or with Summary of solutions to common problems.
 
 Format the response in markdown with the following structure:
 # Important Announcements
-- List announcements with bullet points, using the thread title as a link to the thread ID like this: [Title](thread/thread_id)
+- List announcements with bullet points, using the thread title as a link to the thread ID like this: [Title](thread_id)
 - Do not show the thread ID in the text, only use it in the link
-- Example: [Lab 3 Assignment Updates](thread/thread_abc123)
-- Use nested bullet points for details
+- Example: [Lab 3 Assignment Updates](thread_Yo6sMzwOFrNtOOujb0aK)
+- Use nested bullet points for important details only
 
 # What your peers are discussing
 - List solutions with bullet points, using the thread title as a link to the thread ID like this: [Title](thread_id)
 - Do not show the thread ID in the text, only use it in the link
 - Example: [TCP vs UDP Comparison](thread_abc123)
-- Use nested bullet points for details
+- Use nested bullet points for important details only
 
 Use proper markdown formatting for headers, lists, and emphasis.`;
 
