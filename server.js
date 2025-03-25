@@ -97,7 +97,7 @@ ${JSON.stringify(threads, null, 2)}
 Explain your answer so that it is easy to understand. Be thorough and detailed where appropriate and concise otherwise.
  Format your response in a conversational way. Use markdown formatting where appropriate for code snippets, lists, or emphasis.
  If you're answering a follow-up question, take into account the previous conversation.
- When referencing a thread, mention it as follows: "According to [Thread Title]" or "As mentioned in [Thread Title]" Hyperlink [Thread Title]`
+ When referencing a thread, mention it only once as follows: "According to [Thread Title]" or "As mentioned in [Thread Title]" Hyperlink [Thread Title].`
 
     const result = await model.generateContent(prompt);
     const response = await result.response;
