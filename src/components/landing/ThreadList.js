@@ -189,27 +189,15 @@ function ThreadList({ subsection, onShowInsights }) {
         </Typography>
         <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
           {subsection === 'lab3' && (
-            <>
-              <Button 
-                variant="outlined" 
-                startIcon={isMobile ? null : <UploadIcon />}
-                onClick={uploadMockTCPThreads}
-                disabled={uploading}
-                size={isMobile ? "small" : "medium"}
-                sx={{ ...buttonStyles.outlined }}
-              >
-                {uploading ? <CircularProgress size={24} /> : (isMobile ? 'Demo' : 'Demo Threads')}
-              </Button>
-              <Button
-                variant="outlined"
-                startIcon={isMobile ? null : <LightbulbIcon />}
-                onClick={onShowInsights}
-                size={isMobile ? "small" : "medium"}
-                sx={{ ...buttonStyles.outlined }}
-              >
-                {isMobile ? 'Insights' : 'What\'s Happening?'}
-              </Button>
-            </>
+            <Button
+              variant="outlined"
+              startIcon={isMobile ? null : <LightbulbIcon />}
+              onClick={onShowInsights}
+              size={isMobile ? "small" : "medium"}
+              sx={{ ...buttonStyles.outlined }}
+            >
+              {isMobile ? 'Insights' : 'What\'s Happening?'}
+            </Button>
           )}
           {subsection !== 'rant' && (
             isMobile ? (
