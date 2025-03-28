@@ -1,3 +1,5 @@
+Best UI/UX at DevSoc HackaByte 2025!
+
 ### Inspiration
 
 We've all been there – lost in a sea of endless threads on clunky, outdated educational forums.  Trying to find a simple answer to a homework question felt like navigating a labyrinth.  We saw how much time students (including ourselves!) were wasting, and how often these platforms *hindered* collaboration instead of helping it.  We were inspired by the *potential* of online forums for learning, but frustrated by the reality.  We wanted to build something better, something that leveraged modern technology to create a truly intuitive and *enjoyable* learning environment. We were particularly inspired by the advancements in AI, and how it could be used to organize and contextualize information. We'd also all experienced that feeling of needing to *vent* about a tough course or assignment, but not having a safe, appropriate outlet.
